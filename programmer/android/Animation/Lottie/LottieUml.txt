@@ -1,0 +1,60 @@
+@startuml
+
+interface Cancellable {
+
+cancel()
+
+}
+
+class AsyncTask<Params, Void, LottieComposition> {
+
+}
+
+/'Composition加载器'/
+abstract class CompositionLoader<Params>
+
+AsyncTask <|-- CompositionLoader
+Cancellable <.. CompositionLoader 
+
+/'JSONObject中数组加载器'/
+class JsonCompositionLoader {
+
+}
+
+/'InputStream中数组加载器'/
+class FileCompositionLoader{
+	
+}
+
+CompositionLoader <-- JsonCompositionLoader
+CompositionLoader <--  FileCompositionLoader
+
+interface OnCompositionLoadedListener {
+
+void onCompositionLoaded(LottieComposition composition)
+
+}
+
+/'After Effects/Bodymovin生成model，被LottieAnimationView和LottieDrawable使用'/
+class LottieComposition {
+
+'从Asset中加载数据
+static Cancellable fromAssetFileName()
+
+'从File中加载数据
+static Cancellable fromInputStream()
+
+'从Network加载数据
+static Cancellable fromJson()
+
+'关键方法，所有的加载方式都会使用该方法，将JSONObject转换成LottieComposition
+static LottieComposition fromJsonSync()
+
+}
+
+LottieComposition ..|> OnCompositionLoadedListener
+
+LottieComposition ..> JsonCompositionLoader
+LottieComposition ..> FileCompositionLoader
+
+@enduml
