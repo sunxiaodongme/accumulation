@@ -38,6 +38,17 @@ void onCompositionLoaded(LottieComposition composition)
 /'After Effects/Bodymovin生成model，被LottieAnimationView和LottieDrawable使用'/
 class LottieComposition {
 
+float scale
+Rect bounds
+long startFrame
+long endFrame
+int frameRate
+long duration
+List<Layer> layers
+LongSparseArray<Layer> layerMap
+boolean hasMasks
+boolean hasMattes
+
 '从Asset中加载数据
 static Cancellable fromAssetFileName()
 
@@ -56,5 +67,251 @@ LottieComposition ..|> OnCompositionLoadedListener
 
 LottieComposition ..> JsonCompositionLoader
 LottieComposition ..> FileCompositionLoader
+
+'定义了变换
+interface Transform {
+  Rect getBounds();
+  IAnimatablePathValue getPosition();
+  AnimatablePathValue getAnchor();
+  AnimatableScaleValue getScale();
+  AnimatableFloatValue getRotation();
+  AnimatableIntegerValue getOpacity();
+}
+
+abstract class KeyframeAnimation<T> {
+	
+}
+
+interface AnimatableValue<T> { 
+	
+	KeyframeAnimation<T> createAnimation()
+
+  	boolean hasAnimation()
+
+}
+
+AnimatableValue ..> KeyframeAnimation
+
+interface IAnimatablePathValue {
+	
+	PointF getInitialPoint()
+
+}
+
+IAnimatablePathValue --|> AnimatableValue
+
+class AnimatablePathValue {
+	
+}
+
+AnimatablePathValue ..> IAnimatablePathValue
+
+abstract class BaseAnimatableValue<V, O> {
+	
+
+
+}
+
+BaseAnimatableValue ..|> AnimatableValue
+
+class AnimatableScaleValue {
+	
+}
+
+AnimatableScaleValue --|> BaseAnimatableValue
+
+class AnimatableFloatValue {
+	
+}
+
+AnimatableFloatValue --|> BaseAnimatableValue
+
+class AnimatableIntegerValue {
+	
+}
+
+AnimatableIntegerValue --|> BaseAnimatableValue
+
+Transform ..> IAnimatablePathValue
+Transform ..> AnimatablePathValue
+Transform ..> AnimatableScaleValue
+Transform ..> AnimatableFloatValue
+Transform ..> AnimatableIntegerValue
+
+'形状变化
+class ShapeTransform {
+	
+	
+
+}
+
+ShapeTransform ..|> Transform
+
+class Layer {
+
+List<Object> shapes
+long parentId
+long layerId
+String layerName
+LottieLayerType layerType
+'哪帧进入
+long inFrame
+'哪帧出去
+long outFrame
+'帧率
+int frameRate
+List<Mask> masks
+'图层区域
+int solidWidth
+int solidHeight
+int solidColor
+'透明度，动画过程中的一系列值
+AnimatableIntegerValue opacity
+'选择，动画过程中的一系列值
+AnimatableFloatValue rotation
+'位置，动画过程中的一系列值
+IAnimatablePathValue position
+'锚点，动画过程中的一系列值
+AnimatablePathValue anchor
+'比例，动画过程中的一系列值
+AnimatableScaleValue scale
+'该图层是否有进入动画
+boolean hasInAnimation
+'该图层是否有出去动画
+boolean hasOutAnimation
+'该图层是否有进或出动画
+boolean hasInOutAnimation
+List<Float> inOutKeyFrames
+List<Float> inOutKeyTimes
+MatteType matteType
+
+static Layer fromJson(JSONObject json, LottieComposition composition)
+	
+}
+
+enum LottieLayerType {
+    None
+    Solid
+    Unknown
+    Null
+    Shape
+}
+
+enum MatteType {
+    None
+    Add
+    Invert
+    Unknown
+}
+
+Layer ..|> Transform
+
+Layer ..> LottieLayerType
+Layer ..> MatteType
+
+LottieComposition ..> Layer
+
+class AnimatableLayer {
+
+AnimatableLayer parentLayer	
+List<AnimatableLayer> layers
+KeyframeAnimation<PointF> position
+KeyframeAnimation<PointF> anchorPoint
+
+KeyframeAnimation<ScaleXY> transform
+KeyframeAnimation<Integer> alpha
+KeyframeAnimation<Float> rotation
+List<KeyframeAnimation<?>> animations
+
+float progress
+
+void draw(@NonNull Canvas canvas)
+
+}
+
+AnimatableLayer --|> Drawable
+
+'椭圆
+class EllipseShapeLayer {
+	
+}
+
+EllipseShapeLayer --|> AnimatableLayer
+
+class ShapeLayer {
+	
+}
+
+ShapeLayer --|> AnimatableLayer
+
+'圆形
+class CircleShapeLayer {
+	
+}
+
+CircleShapeLayer --|> ShapeLayer
+
+class RectLayer {
+	
+}
+
+RectLayer --|> AnimatableLayer
+
+class RoundRectLayer {
+	
+}
+
+RoundRectLayer --|> AnimatableLayer
+
+class GroupLayerView {
+	
+
+}
+
+GroupLayerView --|> AnimatableLayer
+
+class MaskLayer {
+List<KeyframeAnimation<Path>> masks
+}
+
+MaskLayer --|> AnimatableLayer
+
+'图层对应的绘制视图
+class LayerView {
+	
+Layer layerModel
+
+void draw(@NonNull Canvas mainCanvas)
+
+}
+
+LayerView --|> AnimatableLayer
+LayerView o-- Layer
+
+class LottieDrawable {
+
+LottieComposition composition
+ValueAnimator animator
+
+Bitmap mainBitmap
+Bitmap maskBitmap
+Bitmap matteBitmap
+Bitmap mainBitmapForMatte
+Bitmap maskBitmapForMatte
+boolean playAnimationWhenLayerAdded
+boolean systemAnimationsAreDisabled
+
+void setComposition(LottieComposition composition)
+void buildLayersForComposition(LottieComposition composition)
+void draw(@NonNull Canvas canvas)
+
+}
+
+LottieDrawable --|> AnimatableLayer
+LottieDrawable o-- LottieComposition
+LottieDrawable o-- ValueAnimator
+LottieDrawable ..> LayerView
+
+
 
 @enduml
