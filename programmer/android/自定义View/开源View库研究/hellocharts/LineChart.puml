@@ -1,0 +1,154 @@
+@startuml
+
+'所有图表的公用接口，定义了基本的图表操作支持'
+interface Chart {
+	
+}
+
+note top of Chart : 所有图表的公用接口，定义了基本的图表操作支持
+
+abstract class AbstractChartView extends View implements Chart {
+	
+	# ChartComputator chartComputator;
+    # AxesRenderer axesRenderer;
+    # ChartTouchHandler touchHandler;
+    # ChartRenderer chartRenderer;
+    # ChartDataAnimator dataAnimator;
+    # ChartViewportAnimator viewportAnimator;
+    '图表是否可交互
+	# boolean isInteractive = true;
+	'图表是否支持滚动
+    # boolean isContainerScrollEnabled = false;
+    # ContainerScrollType containerScrollType;
+
+    '初始化chartComputator，touchHandler，axesRenderer，dataAnimator，viewportAnimator'
+    + AbstractChartView(Context context, AttributeSet attrs, int defStyleAttr);
+    --
+    '当视图大小改变时回调，初始化各组件数据'
+    'chartComputator.setContentRect'
+    'chartRenderer.onChartSizeChanged()'
+    'axesRenderer.onChartSizeChanged()'
+    # void onSizeChanged(int width, int height, int oldWidth, int oldHeight);
+    '使用axesRenderer绘制坐标系背景和前景
+    'chartComputator进行可视图表区域裁剪chartComputator.getContentRectMinusAllMargins()'
+    '使用chartRenderer绘制图表
+    # void onDraw(Canvas canvas);
+    '使用touchHandler，处理手势操作'
+    + boolean onTouchEvent(MotionEvent event);
+	--
+    '数据改变时，调用其通知各组件'
+    'chartComputator.resetContentRect()'
+    'chartRenderer.onChartDataChanged()'
+    'axesRenderer.onChartDataChanged()'
+    'ViewCompat.postInvalidateOnAnimation(this)'
+	# void onChartDataChange();
+
+}
+
+'定义容器支持的滚动类型'
+enum ContainerScrollType {
+    HORIZONTAL, VERTICAL
+}
+
+ContainerScrollType --o AbstractChartView
+
+'计算内容区域和图表视窗'
+class ChartComputator {
+
+	'最大缩放比'
+	# float maxZoom;
+	'图表宽度，px，屏幕显示大小'
+	# int chartWidth;
+	'图表高度，px'
+    # int chartHeight;
+    '减去所有边距的内容矩形'
+    # Rect contentRectMinusAllMargins = new Rect();
+
+}
+
+ChartComputator --o AbstractChartView
+
+class ChartTouchHandler
+
+ChartTouchHandler --o AbstractChartView
+
+'图表渲染公用接口，定义了基本的图表渲染操作'
+interface ChartRenderer {
+	+ void onChartSizeChanged();
+    + void onChartDataChanged();
+    + void onChartViewportChanged();
+	--    
+    '绘制图表
+    + void draw(Canvas canvas);
+	'绘制不应该被内容区域裁剪的图表内容   
+    + void drawUnclipped(Canvas canvas);
+	--
+    + void resetRenderer();
+}
+
+'实现了一些通用的图表渲染操作'
+abstract class AbstractChartRenderer implements ChartRenderer {
+	
+}
+
+'线条图具体的图表渲染操作'
+class LineChartRenderer extends AbstractChartRenderer {
+	
+}
+
+ChartComputator --o AbstractChartRenderer
+
+/'线条数据提供器接口'/
+interface LineChartDataProvider {
+
+    + LineChartData getLineChartData();
+    + void setLineChartData(LineChartData data);
+
+}
+
+class Axis {
+    List<AxisValue> values
+}
+
+abstract class AbstractChartData implements ChartData {
+
+}
+
+Axis --o AbstractChartData
+
+class LineChartData extends AbstractChartData {
+
+}
+
+class Line {
+    List<PointValue> values
+}
+
+Line --o LineChartData
+
+class PointValue {
+
+}
+
+PointValue --o Line
+
+'线条图表视图'
+class LineChartView extends AbstractChartView implements LineChartDataProvider {
+    LineChartData data;
+
+    '设置了线条图渲染器 setChartRenderer(new LineChartRenderer(context, this, this))'
+    + LineChartView(Context context, AttributeSet attrs, int defStyle);
+
+    '设置线条图数据，调用super.onChartDataChange()通知数据改变'
+    + void setLineChartData(LineChartData data);
+}
+
+LineChartData --o LineChartView
+
+LineChartRenderer --o LineChartView
+
+class AxesRenderer
+
+AxesRenderer --o LineChartView
+
+@enduml
