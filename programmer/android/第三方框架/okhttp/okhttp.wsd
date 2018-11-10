@@ -1,0 +1,86 @@
+@startuml okhttp
+
+interface Interceptor
+
+'最后一个拦截器，用来执行到服务端的网络请求'
+class CallServerInterceptor {
+
+}
+
+Interceptor <|.. CallServerInterceptor
+
+'协调Connections、Streams、Calls的关系'
+class StreamAllocation
+
+StreamAllocation <..CallServerInterceptor
+
+'HTTP, HTTPS, 或 HTTPS+HTTP/2的socket和数据流'
+interface Connection
+
+'真实的数据连接'
+class RealConnection {
+
+}
+
+Connection <|.. RealConnection
+ThreadPoolExecutor <-- ConnectionPool
+ConnectionPool <-- RealConnection
+'连接用来到达原始服务器的路由'
+class Route {
+
+}
+Route <-- RealConnection
+Socket <-- RealConnection
+'TLS握手记录'
+class Handshake {
+
+}
+Handshake <-- RealConnection
+'定义okhttp实现的协议'
+enum Protocol
+Protocol <-- RealConnection
+'连接到远端socket'
+class Http2Connection {
+
+}
+Http2Connection <-- RealConnection
+BufferedSource <-- RealConnection
+BufferedSink <-- RealConnection
+
+'应用代码和网络代码转换桥，将用户request转换成网络request，将网络reponse转换为用户response'
+class BridgeInterceptor{
+
+}
+Interceptor <|.. BridgeInterceptor
+'从失败中恢复，如果有必要的话进行重定向，其中创建了StreamAllocation'
+class RetryAndFollowUpInterceptor {
+
+}
+StreamAllocation <.. RetryAndFollowUpInterceptor
+Interceptor <|.. RetryAndFollowUpInterceptor
+'打开一个到目标server的连接，streamAllocation.newStream生成HttpCodec和RealConnection'
+class ConnectInterceptor
+'encode request, decode response'
+interface HttpCodec
+HttpCodec <|.. Http1Codec
+HttpCodec <|.. Http2Codec
+HttpCodec <.. ConnectInterceptor
+Interceptor <|.. ConnectInterceptor
+''
+class CacheInterceptor {
+
+}
+Interceptor <|.. CacheInterceptor
+
+
+
+'表示准备执行的请求'
+interface Call {
+    Response execute()
+    void enqueue(Callback responseCallback)
+    void cancel()
+}
+
+
+
+@enduml
