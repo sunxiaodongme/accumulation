@@ -6,7 +6,6 @@ interface Interceptor
 class CallServerInterceptor {
 
 }
-
 Interceptor <|.. CallServerInterceptor
 
 '协调Connections、Streams、Calls的关系'
@@ -63,16 +62,31 @@ class ConnectInterceptor
 'encode request, decode response'
 interface HttpCodec
 HttpCodec <|.. Http1Codec
+'逻辑双向流'
+class Http2Stream {
+
+}
+Http2Stream <-- Http2Codec
 HttpCodec <|.. Http2Codec
 HttpCodec <.. ConnectInterceptor
 Interceptor <|.. ConnectInterceptor
-''
+'服务request从cache，写reponse到cache'
 class CacheInterceptor {
 
 }
+CacheStrategy <.. CacheInterceptor 
 Interceptor <|.. CacheInterceptor
+interface InternalCache {
+    Response get(Request request)
+    CacheRequest put(Response response)
+}
+interface CacheRequest {
+    Sink body()
+    void abort()
+}
+CacheRequest <.. InternalCache
 
-
+InternalCache <-- CacheInterceptor
 
 '表示准备执行的请求'
 interface Call {
@@ -80,6 +94,79 @@ interface Call {
     void enqueue(Callback responseCallback)
     void cancel()
 }
+'Http Request'
+class Request {
+
+}
+'scheme是http或https的URL'
+class HttpUrl {
+
+}
+HttpUrl <-- Request
+'Http消息的header字段'
+class Headers {
+
+}
+Headers <-- Request
+class RequestBody {
+    long contentLength()
+    MediaType contentType()
+    void writeTo(BufferedSink sink)
+}
+MediaType <-- RequestBody
+BufferedSink <.. RequestBody
+RequestBody <-- Request
+'header缓存控制'
+class CacheControl {
+
+}
+Headers <.. CacheControl
+'header工具'
+class HttpHeaders {
+
+}
+HttpHeaders <.. CacheControl
+RequestBody <-- Request
+
+Request <.. Call
+Response <.. Call
+
+interface Call.Factory
+Request <.. Call.Factory
+class RealCall {
+    '构建完成的interceptors'
+    Response getResponseWithInterceptorChain()
+}
+Call <|.. RealCall 
+
+interface Interceptor.Chain {
+    Request request()
+    Response proceed(Request request)
+    Call call()
+}
+'拦截器链'
+class RealInterceptorChain {
+    List<Interceptor> interceptors
+}
+Interceptor.Chain <|.. RealInterceptorChain
+Interceptor <-- RealInterceptorChain
+
+RealInterceptorChain <.. RealCall
+
+Call.Factory <|.. OkHttpClient
+RealCall <.. OkHttpClient
+
+'缓存http和https response到文件系统，以便重用'
+class Cache {
+    Response get(Request request)
+    CacheRequest put(Response response)
+}
+InternalCache <-- Cache
+class DiskLruCache {
+
+}
+DiskLruCache <-- Cache
+Cache <-- OkHttpClient
 
 
 
