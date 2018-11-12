@@ -1,113 +1,39 @@
 @startuml okhttp
+'OkHttpClient
+Cache <-- OkHttpClient
+Call.Factory <|.. OkHttpClient
+RealCall <.. OkHttpClient
 
-interface Interceptor
-
-'最后一个拦截器，用来执行到服务端的网络请求'
-class CallServerInterceptor {
-
+'Call
+class RealCall {
+    '构建完成的interceptors'
+    Response getResponseWithInterceptorChain()
 }
-Interceptor <|.. CallServerInterceptor
-
-'协调Connections、Streams、Calls的关系'
-class StreamAllocation
-
-StreamAllocation <..CallServerInterceptor
-
-'HTTP, HTTPS, 或 HTTPS+HTTP/2的socket和数据流'
-interface Connection
-
-'真实的数据连接'
-class RealConnection {
-
-}
-
-Connection <|.. RealConnection
-ThreadPoolExecutor <-- ConnectionPool
-ConnectionPool <-- RealConnection
-'连接用来到达原始服务器的路由'
-class Route {
-
-}
-Route <-- RealConnection
-Socket <-- RealConnection
-'TLS握手记录'
-class Handshake {
-
-}
-Handshake <-- RealConnection
-'定义okhttp实现的协议'
-enum Protocol
-Protocol <-- RealConnection
-'连接到远端socket'
-class Http2Connection {
-
-}
-Http2Connection <-- RealConnection
-BufferedSource <-- RealConnection
-BufferedSink <-- RealConnection
-
-'应用代码和网络代码转换桥，将用户request转换成网络request，将网络reponse转换为用户response'
-class BridgeInterceptor{
-
-}
-Interceptor <|.. BridgeInterceptor
-'从失败中恢复，如果有必要的话进行重定向，其中创建了StreamAllocation'
-class RetryAndFollowUpInterceptor {
-
-}
-StreamAllocation <.. RetryAndFollowUpInterceptor
-Interceptor <|.. RetryAndFollowUpInterceptor
-'打开一个到目标server的连接，streamAllocation.newStream生成HttpCodec和RealConnection'
-class ConnectInterceptor
-'encode request, decode response'
-interface HttpCodec
-HttpCodec <|.. Http1Codec
-'逻辑双向流'
-class Http2Stream {
-
-}
-Http2Stream <-- Http2Codec
-HttpCodec <|.. Http2Codec
-HttpCodec <.. ConnectInterceptor
-Interceptor <|.. ConnectInterceptor
-'服务request从cache，写reponse到cache'
-class CacheInterceptor {
-
-}
-CacheStrategy <.. CacheInterceptor 
-Interceptor <|.. CacheInterceptor
-interface InternalCache {
-    Response get(Request request)
-    CacheRequest put(Response response)
-}
-interface CacheRequest {
-    Sink body()
-    void abort()
-}
-CacheRequest <.. InternalCache
-
-InternalCache <-- CacheInterceptor
-
+Call <|.. RealCall 
 '表示准备执行的请求'
 interface Call {
     Response execute()
     void enqueue(Callback responseCallback)
     void cancel()
 }
+'Request
+Request <.. Call
+Request <.. Call.Factory
 'Http Request'
 class Request {
 
 }
+HttpUrl <-- Request
 'scheme是http或https的URL'
 class HttpUrl {
 
 }
-HttpUrl <-- Request
+Headers <-- Request
 'Http消息的header字段'
 class Headers {
 
 }
-Headers <-- Request
+RequestBody <-- Request
 class RequestBody {
     long contentLength()
     MediaType contentType()
@@ -115,30 +41,23 @@ class RequestBody {
 }
 MediaType <-- RequestBody
 BufferedSink <.. RequestBody
-RequestBody <-- Request
+CacheControl <-- Request
 'header缓存控制'
 class CacheControl {
 
 }
 Headers <.. CacheControl
+HttpHeaders <.. CacheControl
 'header工具'
 class HttpHeaders {
 
 }
-HttpHeaders <.. CacheControl
-RequestBody <-- Request
-
-Request <.. Call
+'Response
 Response <.. Call
 
-interface Call.Factory
-Request <.. Call.Factory
-class RealCall {
-    '构建完成的interceptors'
-    Response getResponseWithInterceptorChain()
-}
-Call <|.. RealCall 
+RealInterceptorChain <.. RealCall
 
+'Chain
 interface Interceptor.Chain {
     Request request()
     Response proceed(Request request)
@@ -151,23 +70,113 @@ class RealInterceptorChain {
 Interceptor.Chain <|.. RealInterceptorChain
 Interceptor <-- RealInterceptorChain
 
-RealInterceptorChain <.. RealCall
+'Interceptor
+interface Interceptor {
+    Response intercept(Chain chain)
+}
+'RetryAndFollowUpInterceptor
+Interceptor <|.. RetryAndFollowUpInterceptor
+'从失败中恢复，如果有必要的话进行重定向，其中创建了StreamAllocation'
+class RetryAndFollowUpInterceptor {
 
-Call.Factory <|.. OkHttpClient
-RealCall <.. OkHttpClient
+}
+StreamAllocation <.. RetryAndFollowUpInterceptor
+'BridgeInterceptor
+Interceptor <|.. BridgeInterceptor
+'应用代码和网络代码转换桥，将用户request转换成网络request，将网络reponse转换为用户response'
+class BridgeInterceptor{
 
+}
+'CacheInterceptor
+Interceptor <|.. CacheInterceptor
+'服务request从cache，写reponse到cache'
+class CacheInterceptor {
+
+}
+CacheStrategy <.. CacheInterceptor
+InternalCache <-- CacheInterceptor
+'Cache
+interface InternalCache {
+    Response get(Request request)
+    CacheRequest put(Response response)
+}
+CacheRequest <.. InternalCache
+interface CacheRequest {
+    Sink body()
+    void abort()
+}
+Cache -- InternalCache
 '缓存http和https response到文件系统，以便重用'
 class Cache {
     Response get(Request request)
     CacheRequest put(Response response)
 }
-InternalCache <-- Cache
+DiskLruCache <-- Cache
 class DiskLruCache {
 
 }
-DiskLruCache <-- Cache
-Cache <-- OkHttpClient
+'ConnectInterceptor
+Interceptor <|.. ConnectInterceptor
+'打开一个到目标server的连接，streamAllocation.newStream生成HttpCodec和RealConnection'
+class ConnectInterceptor {
 
+}
+HttpCodec <.. ConnectInterceptor
+interface HttpCodec
+'encode request, decode response'
+HttpCodec <|.. Http1Codec
+HttpCodec <|.. Http2Codec
+Http2Stream <-- Http2Codec
+'逻辑双向流'
+class Http2Stream {
 
+}
+'CallServerInterceptor
+'最后一个拦截器，用来执行到服务端的网络请求'
+class CallServerInterceptor {
+
+}
+Interceptor <|.. CallServerInterceptor
+RealInterceptorChain <.. CallServerInterceptor
+HttpCodec <.. CallServerInterceptor
+RealConnection <.. CallServerInterceptor
+'Connection
+'真实的数据连接'
+class RealConnection {
+
+}
+Connection <|.. RealConnection
+'HTTP, HTTPS, 或 HTTPS+HTTP/2的socket和数据流'
+interface Connection
+ConnectionPool <-- RealConnection
+ThreadPoolExecutor <-- ConnectionPool
+Route <-- RealConnection
+'连接用来到达原始服务器的路由'
+class Route {
+
+}
+Socket <-- RealConnection
+Handshake <-- RealConnection
+'TLS握手记录'
+class Handshake {
+
+}
+Protocol <-- RealConnection
+'定义okhttp实现的协议'
+enum Protocol
+Http2Connection <-- RealConnection
+'连接到远端socket'
+class Http2Connection {
+
+}
+BufferedSource <-- RealConnection
+BufferedSink <-- RealConnection
+HttpMethod <.. CallServerInterceptor
+'协调Connections、Streams、Calls的关系'
+class StreamAllocation {
+
+}
+StreamAllocation <..CallServerInterceptor
+HttpMethod <.. CallServerInterceptor
 
 @enduml
