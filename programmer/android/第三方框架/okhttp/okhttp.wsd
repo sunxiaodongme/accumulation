@@ -126,11 +126,21 @@ interface HttpCodec
 'encode request, decode response'
 HttpCodec <|.. Http1Codec
 HttpCodec <|.. Http2Codec
+'使用HTTP/2帧Encode请求和响应'
+class Http2Codec {
+
+}
 Http2Stream <-- Http2Codec
 '逻辑双向流'
 class Http2Stream {
-
 }
+"Header" <.. Http2Codec
+'Http header:name大小写不敏感，name是ASCII，value是UTF-8'
+class Header {
+    ByteString name
+    ByteString value
+}
+
 'CallServerInterceptor
 '最后一个拦截器，用来执行到服务端的网络请求'
 class CallServerInterceptor {
