@@ -1,0 +1,40 @@
+@startUml okhttp
+
+RetryAndFollowUpInterceptor -> StreamAllocation: streamFailed
+
+ConnectInterceptor -> StreamAllocation : newStream
+StreamAllocation -> RealConnection : newCodec
+StreamAllocation -> StreamAllocation : findHealthyConnection
+note right : 优先选存在的连接
+
+StreamAllocation -> ConnectionPool : get
+ConnectionPool -> RealConnection : isEligible
+StreamAllocation <-- RealConnection: acquire
+StreamAllocation -> RealConnection : allocations.add
+StreamAllocation -> RouteSelector : next
+StreamAllocation -> RealConnection : connect
+RealConnection -> Address : connectionSpecs
+RealConnection -> Route : requiresTunnel
+RealConnection -> RealConnection : connectTunnel
+RealConnection -> RealConnection : connectSocket
+RealConnection -> RealConnection : establishProtocol
+RealConnection -> Http2Connection : maxConcurrentStreams
+StreamAllocation -> StreamAllocation : routeDatabase
+StreamAllocation -> RouteDatabase : connected
+StreamAllocation -> ConnectionPool : put
+StreamAllocation -> ConnectionPool : deduplicate
+StreamAllocation <-- ConnectionPool : releaseAndAcquire
+RetryAndFollowUpInterceptor -> RouteSelector : connectFailed
+RouteSelector -> RouteDatabase : failed
+
+CallServerInterceptor -> HttpCodec : writeRequestHeaders
+CallServerInterceptor -> HttpCodec : flushRequest
+CallServerInterceptor -> HttpCodec : readResponseHeaders
+CallServerInterceptor -> HttpCodec : createRequestBody
+CallServerInterceptor -> HttpCodec : createRequestBody
+StreamAllocation <-- CallServerInterceptor : noNewStreams
+StreamAllocation -> StreamAllocation : deallocate 
+CallServerInterceptor -> HttpCodec : finishRequest
+
+
+@endUml

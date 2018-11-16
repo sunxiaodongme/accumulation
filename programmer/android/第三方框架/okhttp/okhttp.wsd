@@ -3,7 +3,7 @@
 Cache <-- OkHttpClient
 Call.Factory <|.. OkHttpClient
 RealCall <.. OkHttpClient
-
+Internal.instance <-- OkHttpClient
 'Call
 class RealCall {
     '构建完成的interceptors'
@@ -158,13 +158,44 @@ class RealConnection {
 Connection <|.. RealConnection
 'HTTP, HTTPS, 或 HTTPS+HTTP/2的socket和数据流'
 interface Connection
-ConnectionPool <-- RealConnection
+ConnectionPool -- RealConnection
+'管理Http或Http/2连接的重用'
+class ConnectionPool {
+    Deque<RealConnection> connections
+}
 ThreadPoolExecutor <-- ConnectionPool
+RouteDatabase <-- ConnectionPool
+'失败route的黑名单列表，之前的失败会被记忆，新连接不再使用'
+class RouteDatabase {
+    Set<Route> failedRoutes
+}
+Route <-- RouteDatabase
 Route <-- RealConnection
 '连接用来到达原始服务器的路由'
 class Route {
 
 }
+Address <-- Route
+'一个到原始服务器连接的配置'
+class Address {
+    List<Protocol> protocols
+    List<ConnectionSpec> connectionSpecs
+}
+HttpUrl <-- Address
+Dns <-- Address
+'dns服务'
+class Dns {
+    List<InetAddress> lookup(String hostname)
+}
+SocketFactory <-- Address
+Authenticator <-- Address
+Protocol <-- Address
+ConnectionSpec <-- Address
+ProxySelector <-- Address
+Proxy <-- Address
+SSLSocketFactory <-- Address
+HostnameVerifier <-- Address
+CertificatePinner <-- Address
 Socket <-- RealConnection
 Handshake <-- RealConnection
 'TLS握手记录'
@@ -181,12 +212,37 @@ class Http2Connection {
 }
 BufferedSource <-- RealConnection
 BufferedSink <-- RealConnection
+ConnectionSpecSelector <-- RealConnection
+'处理连接配置降级策略：当一个安全的socket连接因为handshake / protocol问题失败了，
+'可以改变到不同的协议重试
+class ConnectionSpecSelector {
+    List<ConnectionSpec> connectionSpecs
+}
 HttpMethod <.. CallServerInterceptor
+StreamAllocation <..CallServerInterceptor
 '协调Connections、Streams、Calls的关系'
 class StreamAllocation {
 
 }
-StreamAllocation <..CallServerInterceptor
-HttpMethod <.. CallServerInterceptor
+Internal.instance <.. StreamAllocation
+RouteSelector <-- StreamAllocation
+'选择连接到原始服务器的路由'
+class RouteSelector {
+    List<Proxy> proxies
+    List<InetSocketAddress> inetSocketAddresses
+    List<Route> postponedRoutes
+}
+Address <-- RouteSelector
+RouteDatabase <.. RouteSelector
+Call <.. RouteSelector
+Proxy <.. RouteSelector
+InetSocketAddress <-- RouteSelector
+Route <-- RouteSelector
+RouteSelector.Selection <-- RouteSelector 
+'选中Routes的集合'
+class RouteSelector.Selection {
+    List<Route> routes
+}
+
 
 @enduml
