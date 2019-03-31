@@ -1,0 +1,69 @@
+@startuml fresco
+
+== Fresco初始化阶段 ==
+
+App --> Fresco: initialize \n提供ImagePipelineConfig
+Fresco --> SoLoader: init
+Fresco --> ImagePipelineFactory: initialize
+Fresco --> Fresco: initializeDrawee
+Fresco --> SimpleDraweeView: initialize \n提供PipelineDraweeControllerBuilderSupplier
+
+== SimpleDraweeView初始化阶段 ==
+
+SimpleDraweeView --> SimpleDraweeView: init
+SimpleDraweeView --> PipelineDraweeControllerBuilderSupplier: get \n获取PipelineDraweeControllerBuilder
+
+== SimpleDraweeView图片显示阶段 ==
+
+SimpleDraweeView --> SimpleDraweeView: setImageURI
+
+== 创建PipelineDraweeController ==
+
+SimpleDraweeView --> PipelineDraweeControllerBuilder: build
+PipelineDraweeControllerBuilder --> AbstractDraweeControllerBuilder: buildController
+AbstractDraweeControllerBuilder --> PipelineDraweeControllerBuilder: obtainController
+PipelineDraweeControllerBuilder --> AbstractDraweeControllerBuilder: getOldController
+alt no old controller
+    PipelineDraweeControllerBuilder --> PipelineDraweeControllerFactory: newController
+end
+PipelineDraweeControllerBuilder --> AbstractDraweeControllerBuilder: obtainDataSourceSupplier
+AbstractDraweeControllerBuilder --> AbstractDraweeControllerBuilder: getDataSourceSupplierForRequest \n返回包含getDataSourceForRequest的Supplier  
+PipelineDraweeControllerBuilder --> PipelineDraweeController: initialize
+
+SimpleDraweeView --> DraweeView: setController
+DraweeView --> DraweeHolder: setController
+DraweeHolder --> DraweeHolder: attachController
+DraweeHolder --> PipelineDraweeController: onAttach
+
+== 启动图片获取操作流程 ==
+
+PipelineDraweeController --> PipelineDraweeController: submitRequest
+PipelineDraweeController --> PipelineDraweeController: getCachedImage \n从mMemoryCache中获取内存缓存
+alt has memory cache
+    PipelineDraweeController --> ControllerListener: onSubmit
+    PipelineDraweeController --> PipelineDraweeController: onImageLoadedFromCacheImmediately
+    PipelineDraweeController --> ImageOriginListener: onImageLoaded
+    PipelineDraweeController --> PipelineDraweeController: onNewResultInternal
+else no memory cache
+    PipelineDraweeController --> ControllerListener: onSubmit
+    PipelineDraweeController --> PipelineDraweeController: getDataSource
+    PipelineDraweeController --> PipelineDraweeControllerBuilder: getDataSourceForRequest
+    PipelineDraweeControllerBuilder --> ImagePipeline: fetchDecodedImage \n启动的图片获取和解码等操作
+    PipelineDraweeController --> AbstractDataSource: subscribe
+    AbstractDataSource --> DataSubscriber: onNewResultImpl\nonFailureImpl\nonProgressUpdate
+    DataSubscriber --> PipelineDraweeController: onNewResultInternal
+end
+
+== 回调图片获取结果，以更新视图展示 ==
+
+PipelineDraweeController --> PipelineDraweeController: createDrawable \n通过CloseableImage创建Drawable
+PipelineDraweeController --> PipelineDraweeController: maybeCreateDrawableFromFactories
+PipelineDraweeController --> GenericDraweeHierarchy: setImage \n触发drawable绘制显示
+
+== 关联图片展示到视图 ==
+
+DraweeView --> ImageView: setImageDrawable
+DraweeView --> DraweeHolder: getTopLevelDrawable
+DraweeHolder --> GenericDraweeHierarchy: getTopLevelDrawable \n返回的Drawble是一个根据显示参数设置和图层设置的组合Drawable
+
+@enduml
