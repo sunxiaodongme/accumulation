@@ -49,6 +49,8 @@ else no memory cache
     PipelineDraweeController --> PipelineDraweeController: getDataSource
     PipelineDraweeController --> PipelineDraweeControllerBuilder: getDataSourceForRequest
     PipelineDraweeControllerBuilder --> ImagePipeline: fetchDecodedImage \n启动的图片获取和解码等操作
+    ImagePipeline --> ProducerSequenceFactory: getDecodedImageProducerSequence \n获取图片处理流程中的各处理器 
+    ProducerSequenceFactory --> ProducerSequenceFactory: getBasicDecodedImageSequence \n根据ImageRequest中getSourceUriType返回的url类型，获取各类型处理器
     PipelineDraweeController --> AbstractDataSource: subscribe
     AbstractDataSource --> DataSubscriber: onNewResultImpl\nonFailureImpl\nonProgressUpdate
     DataSubscriber --> PipelineDraweeController: onNewResultInternal
