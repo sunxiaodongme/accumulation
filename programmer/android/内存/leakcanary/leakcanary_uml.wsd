@@ -1,0 +1,169 @@
+@startuml leakcanary_uml
+
+'app retained object watch installer'
+class AppWatcherInstaller
+AppWatcherInstaller --|> ContentProvider
+AppWatcherInstaller ..> InternalAppWatcher
+'app retained object watch'
+class InternalAppWatcher {
+    fun install
+}
+InternalAppWatcher ..> ActivityDestroyWatcher
+'activity destory观测，监听onActivityDestroyed调用objectWatcher.watch(activity)'
+class ActivityDestroyWatcher {
+    objectWatcher: ObjectWatcher
+}
+InternalAppWatcher ..> FragmentDestroyWatcher
+'fragment destory观测，onFragmentViewDestroyed watch(view)，onFragmentDestroyed watch(fragment)'
+class FragmentDestroyWatcher {
+    objectWatcher: ObjectWatcher
+}
+FragmentDestroyWatcher o-- AndroidOFragmentDestroyWatcher
+FragmentDestroyWatcher o-- AndroidXFragmentDestroyWatcher 
+InternalAppWatcher --> ObjectWatcher
+'watch object, 检测这些object是否按预期clear, 如果不是通知retained检测'
+class ObjectWatcher {
+    fun watch
+}
+InternalAppWatcher --> InternalLeakCanary
+'leak canary'
+class InternalLeakCanary {
+    fun invoke
+}
+InternalLeakCanary ..|> OnObjectRetainedListener
+InternalLeakCanary ..> HeapDumpTrigger
+'trigger heap dump'
+class HeapDumpTrigger {
+    fun scheduleRetainedObjectCheck
+    fun checkRetainedObjects
+}
+HeapDumpTrigger ..> AndroidHeapDumper
+'android dump heap'
+class AndroidHeapDumper {
+    
+}
+AndroidHeapDumper ..> Debug
+'android debug use to dump hprof'
+class Debug {
+    fun dumpHprofData
+}
+AndroidHeapDumper ..|> HeapDumper
+interface HeapDumper {
+    fun dumpHeap
+}
+HeapDumpTrigger ..> GcTrigger
+HeapDumpTrigger ..> ObjectWatcher 
+HeapDumpTrigger ..> HeapAnalyzerService
+class HeapAnalyzerService {
+    fun runAnalysis
+    fun onHandleIntentInForeground
+}
+HeapAnalyzerService ..> HeapAnalyzer
+class HeapAnalyzer {
+    fun analyze
+}
+HeapAnalyzer ..> HeapAnalysis
+'analyzer result'
+class HeapAnalysis {
+
+}
+HeapAnalysisFailure --|> HeapAnalysis
+HeapAnalysisFailure --> HeapAnalysisException
+HeapAnalysisSuccess --|> HeapAnalysis
+class HeapAnalysisSuccess {
+    applicationLeaks: List<ApplicationLeak>
+    libraryLeaks: List<LibraryLeak>
+}
+HeapAnalysisSuccess --> Leak
+'leak data'
+class Leak {
+    val className: String,
+    val leakTrace: LeakTrace,
+    val retainedHeapByteSize: Int?
+}
+ApplicationLeak --|> Leak
+LibraryLeak --|> Leak
+Leak --> LeakTrace
+class LeakTrace {
+    elements: List<LeakTraceElement>
+}
+LeakTrace --> LeakTraceElement
+class LeakTraceElement {
+    val reference: LeakReference?
+    val holder: Holder
+    val className: String
+    val labels: Set<String>
+    val leakStatus: LeakNodeStatus
+    val leakStatusReason: String
+}
+HeapAnalyzer ..> Hprof
+'an opened Hprof file'
+class Hprof {
+
+}
+Hprof ..> HprofReader
+'read hprof content'
+class HprofReader {
+    fun readHprofRecords
+}
+HprofReader ..> HprofRecord
+'对应Hprof中的一条记录'
+class HprofRecord {
+
+}
+HeapAnalyzer ..> HprofHeapGraph
+'read data from indexed [Hprof]'
+class HprofHeapGraph {
+    fun wrapIndexedObject
+}
+HprofHeapGraph ..|> HeapGraph
+HeapGraph --> GraphContext
+HeapGraph --> GcRoot
+HeapGraph --> HeapObject
+HeapGraph --> HeapClass
+HeapGraph --> HeapInstance
+HprofHeapGraph --> HprofInMemoryIndex
+'create index hprof'
+class HprofInMemoryIndex {
+
+}    
+HprofInMemoryIndex ..> ProguardMapping
+HeapAnalyzer ..> FindLeakInput
+class FindLeakInput {
+    fun findLeaks
+    fun findLeakingObjects
+    fun buildLeakTraces
+}
+FindLeakInput --> HeapGraph
+FindLeakInput --> ObjectInspector
+'提供heap中object(classes, instances and arrays)识别'
+class ObjectInspector {
+
+}
+ObjectInspector ..> ObjectReporter
+ObjectReporter --> HeapObject
+'an object in the heap dump'
+class HeapObject {
+
+}
+FindLeakInput --> ReferenceMatcher
+FindLeakInput ..> PathFinder
+'finds the shortest path from leaking references to a gc root'
+class PathFinder {
+    fun findPathsFromGcRoots
+}
+PathFinder ..> PathFindingResults
+PathFindingResults --> ReferencePathNode
+RootNode --|> ReferencePathNode
+ChildNode --|> ReferencePathNode
+'store the analysis to disk and show a notification summarizing the result'
+class DefaultOnHeapAnalyzedListener {
+
+}
+DefaultOnHeapAnalyzedListener ..|> OnHeapAnalyzedListener
+interface OnHeapAnalyzedListener {
+    fun onHeapAnalyzed
+}
+OnHeapAnalyzedListener ..> HeapAnalysis
+
+@enduml
