@@ -1,0 +1,27 @@
+@startuml oboe_samples_uml_
+
+class PlaybackEngine {
+
+}
+PlaybackEngine --> HelloOboeEngine
+class HelloOboeEngine {
+
+}
+HelloOboeEngine --> LatencyTuningCallback
+class LatencyTuningCallback {
+
+}
+LatencyTuningCallback --|> DefaultAudioStreamCallback
+'渲染来自IRenderableAudio的数据'
+class DefaultAudioStreamCallback {
+
+}
+DefaultAudioStreamCallback ..|> AudioStreamCallback
+'onAudioReady用于数据流动，onError*用于提示错误'
+class AudioStreamCallback {
+
+}
+HelloOboeEngine --> SoundGenerator
+
+
+@enduml

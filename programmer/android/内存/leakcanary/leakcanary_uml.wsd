@@ -112,30 +112,68 @@ class HprofRecord {
 
 }
 HeapAnalyzer ..> HprofHeapGraph
-'read data from indexed [Hprof]'
+'read data from indexed [Hprof], warp IndexedObject to HeapObject'
 class HprofHeapGraph {
     fun wrapIndexedObject
 }
 HprofHeapGraph ..|> HeapGraph
 HeapGraph --> GraphContext
 HeapGraph --> GcRoot
+'heap dump中分析出的GcRoot，记录在GcRootRecord中'
+class GcRoot {
+
+}
+JniGlobal --|> GcRoot
+JniLocal --|> GcRoot
+JavaFrame --|> GcRoot
+NativeStack --|> GcRoot
+StickyClass --|> GcRoot
+ThreadBlock --|> GcRoot
+MonitorUsed --|> GcRoot
+ThreadObject --|> GcRoot
+ReferenceCleanup --|> GcRoot
+VmInternal --|> GcRoot
+JniMonitor --|> GcRoot
+InternedString --|> GcRoot
+Finalizing --|> GcRoot
+Debugger --|> GcRoot
+Unreachable --|> GcRoot
 HeapGraph --> HeapObject
 HeapGraph --> HeapClass
 HeapGraph --> HeapInstance
+HeapInstance ..> FieldValuesReader
 HprofHeapGraph --> HprofInMemoryIndex
 'create index hprof'
 class HprofInMemoryIndex {
-
+    fun className
+    fun fieldName
+    fun classId
+    fun indexedObjectSequence
 }    
+HprofInMemoryIndex ..> Builder
+'handle HprofRecord to type map'
+class Builder {
+
+}
+Builder ..|> OnHprofRecordListener
+interface OnHprofRecordListener {
+    fun onHprofRecord
+}
 HprofInMemoryIndex ..> ProguardMapping
 HeapAnalyzer ..> FindLeakInput
+'找出所有可能泄露对象，并找到最短gc路径'
 class FindLeakInput {
     fun findLeaks
     fun findLeakingObjects
     fun buildLeakTraces
 }
 FindLeakInput --> HeapGraph
-FindLeakInput --> ObjectInspector
+FindLeakInput --> AndroidObjectInspectors
+'Android泄露对象识别器，基于对AOSP和各种库的理解定义'
+class AndroidObjectInspectors {
+
+}
+AndroidObjectInspectors --> ObjectInspector
 '提供heap中object(classes, instances and arrays)识别'
 class ObjectInspector {
 
@@ -147,15 +185,47 @@ class HeapObject {
 
 }
 FindLeakInput --> ReferenceMatcher
+'用来匹配heap中Reference已知的模式'
+class ReferenceMatcher {
+
+}
+ReferenceMatcher --> ReferencePattern
+'用于匹配给定Reference的模式'
+class ReferencePattern {
+
+}
+JavaLocalPattern --|> ReferencePattern
+StaticFieldPattern --|> ReferencePattern
+InstanceFieldPattern --|> ReferencePattern
+NativeGlobalVariablePattern --|> ReferencePattern
+LibraryLeakReferenceMatcher --|> ReferenceMatcher
+IgnoredReferenceMatcher --|> ReferenceMatcher
 FindLeakInput ..> PathFinder
 'finds the shortest path from leaking references to a gc root'
 class PathFinder {
     fun findPathsFromGcRoots
 }
+PathFinder ..> State
+'store references path'
+class State {
+    fun findPathsFromGcRoots
+    fun enqueueGcRoots
+}
+PathFinder --> AndroidReferenceMatchers
+'构建android已知的引用列表，记录android平台已知的泄露'
+class AndroidReferenceMatchers {
+    val appDefaults: List<ReferenceMatcher>
+    fun buildKnownReferences
+}
 PathFinder ..> PathFindingResults
 PathFindingResults --> ReferencePathNode
 RootNode --|> ReferencePathNode
+RootNode --> GcRoot
+LibraryLeakRootNode --|> RootNode
+NormalRootNode --|> RootNode
 ChildNode --|> ReferencePathNode
+LibraryLeakChildNode --|> ChildNode
+NormalNode --|> ChildNode
 'store the analysis to disk and show a notification summarizing the result'
 class DefaultOnHeapAnalyzedListener {
 
