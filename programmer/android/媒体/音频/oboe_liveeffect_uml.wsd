@@ -1,0 +1,11 @@
+@startuml oboe_liveeffect_uml
+
+class LiveEffectEngine {
+    AudioStream *mRecordingStream
+    AudioStream *mPlayStream
+    setAudioApi()
+    setEffectOn(bool isOn)
+}
+LiveEffectEngine ..> 
+
+@enduml

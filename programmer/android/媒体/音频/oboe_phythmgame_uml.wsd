@@ -1,0 +1,37 @@
+@startuml oboe_phythmgame_uml
+
+class Game {
+    start()
+    stop()
+    tap()
+    tick()
+}
+Game ..> AAssetManager
+Game --|> AudioStreamCallback
+class AudioStreamCallback {
+    onAudioReady(AudioStream *oboeStream, void *audioData, int32_t numFrames)
+}
+Game --> Mixer
+'组合多个tracks的输出到为一个输出'
+class Mixer {
+    addTrack(IRenderableAudio *renderer)
+}
+Mixer ..|> IRenderableAudio
+interface IRenderableAudio {
+    renderAudio(float *targetData, int32_t numFrames)
+} 
+Mixer --> Player
+Player ..|> IRenderableAudio
+Player ..> AAssetDataSource
+'asset数据源'
+class AAssetDataSource {
+    static AAssetDataSource* newFromCompressedAsset()
+}
+AAssetDataSource ..|> DataSource
+AAssetDataSource ..> NDKExtractor
+'decode asset data'
+class NDKExtractor {
+    decode()
+}
+
+@enduml

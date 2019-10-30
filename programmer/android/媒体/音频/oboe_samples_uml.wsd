@@ -1,10 +1,16 @@
-@startuml oboe_samples_uml_
+@startuml oboe_samples_uml
 
 class PlaybackEngine {
 
 }
 PlaybackEngine --> HelloOboeEngine
 class HelloOboeEngine {
+    createPlaybackStream(oboe::AudioStreamBuilder builder)
+    start()
+}
+HelloOboeEngine ..> AudioStreamBuilder
+'stream构建器'
+class AudioStreamBuilder {
 
 }
 HelloOboeEngine --> LatencyTuningCallback
@@ -19,9 +25,28 @@ class DefaultAudioStreamCallback {
 DefaultAudioStreamCallback ..|> AudioStreamCallback
 'onAudioReady用于数据流动，onError*用于提示错误'
 class AudioStreamCallback {
-
+    onAudioReady(oboe::AudioStream *oboeStream, void *audioData, int32_t numFrames)
 }
 HelloOboeEngine --> SoundGenerator
+'对每个渠道生成一个固定频率的tone'
+class SoundGenerator {
+    tap(bool isOn)
+    renderAudio(float *audioData, int32_t numFrames)
+}
+SoundGenerator --|> TappableAudioSource
+'渲染audio，并执行点击控制'
+class TappableAudioSource {
+    int32_t mSampleRate
+    int32_t mChannelCount
+}
+TappableAudioSource ..|> IRenderableAudio
+TappableAudioSource ..|> ITappable
+SoundGenerator --> Oscillator
+'单渠道audio渲染'
+class Oscillator {
+
+}
+Oscillator ..|> IRenderableAudio
 
 
 @enduml
