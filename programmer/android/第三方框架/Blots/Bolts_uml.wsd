@@ -1,0 +1,82 @@
+@startuml bolts_uml
+
+'执行任务管理'
+class Task<TResult> { 
+    Task<TResult> call(final Callable<TResult> callable, Executor executor,
+      final CancellationToken ct)
+    Task<TContinuationResult> continueWith(
+      final Continuation<TResult, TContinuationResult> continuation, final Executor executor,
+      final CancellationToken ct)  
+    Task<TContinuationResult> continueWithTask(
+      final Continuation<TResult, Task<TContinuationResult>> continuation, final Executor executor,
+      final CancellationToken ct)
+    boolean trySetCancelled()
+    boolean trySetResult(TResult result)
+    boolean trySetError(Exception error)      
+    boolean isCompleted()
+    boolean isCancelled()
+    boolean isFaulted()
+    TResult getResult()
+    Exception getError()                
+}
+Task --> BoltsExecutors
+'Bolts内部封装的Executor'
+class BoltsExecutors {
+    ExecutorService background()
+    ScheduledExecutorService scheduled()
+    Executor immediate()
+}
+BoltsExecutors --> ThreadLocal
+BoltsExecutors --> AndroidExecutors
+'Bolts内部为Android封装的Executor'
+class AndroidExecutors {
+    Executor uiThread()
+    ExecutorService newCachedThreadPool()
+    ExecutorService newCachedThreadPool(ThreadFactory threadFactory)
+}    
+
+Task ..> Callable
+'表示一个调用任务'
+interface Callable<V> {
+    V call() throws Exception;
+}
+
+Task ..> TaskCompletionSource
+'管理任务的连接，避免任务完成后结果被立即消费，他是Task<TResult>的生产者，通过getTask()方法让消费者访问消费'
+class TaskCompletionSource<TResult> {
+    '返回一个新的task，用于消费者使用来构建下一个执行'
+    Task<TResult> getTask()
+    setCancelled() 
+    setResult(TResult result)
+    setError(Exception error)
+}
+
+Task ..> Continuation
+'表示一个continue任务'
+interface Continuation<TTaskResult, TContinuationResult> {
+  TContinuationResult then(Task<TTaskResult> task) throws Exception;
+}
+
+Task ..> CancellationToken
+'传播操作应该被cancel的通知，CancellationTokenSource的装饰器'
+class CancellationToken {
+    boolean isCancellationRequested()
+    CancellationTokenRegistration register(Runnable action)
+}
+CancellationToken --> CancellationTokenSource
+'cancel状态的管理类'
+class CancellationTokenSource {
+    CancellationToken getToken()
+    cancel()
+    cancelAfter(long delay, TimeUnit timeUnit)
+}
+CancellationTokenSource ..|> Closeable
+CancellationTokenSource --> CancellationTokenRegistration
+class CancellationTokenRegistration {
+    close()
+    runAction()
+} 
+'表示注册到CancellationTokenSource中观察cancel的一个回调代理'
+CancellationTokenRegistration ..|> Closeable
+
+@enduml
