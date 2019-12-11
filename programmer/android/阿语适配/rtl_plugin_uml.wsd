@@ -1,0 +1,33 @@
+@startuml rlt_plugin_uml
+
+class BaseHandler {
+    regex: String
+    handle(text: String)
+    modify(oldText: String, newText: String, matcher: Matcher)
+}
+
+BaseHandler <|-- XmlHandler
+class XmlHandler {
+    createRCode(matcher: Matcher)
+}
+XmlHandler <|-- AttrXmlHandler
+XmlHandler <|-- ValueXmlHandler
+
+BaseHandler <|-- JavaHandler
+class JavaHandler {
+    createGe17Code(matcher: Matcher)
+    createRCode(matcher: Matcher, import: (String) -> Unit)
+    isSupported(oldContent: String, startIndex: Int, ge17Code: String, lt17Code: String)
+}
+
+JavaHandler <|-- ConstraintJavaHandler
+JavaHandler <|-- GetAttrJavaHandler
+JavaHandler <|-- GetMethodJavaHandler
+JavaHandler <|-- MarginAttrJavaHandler
+JavaHandler <|-- MarginMethodJavaHandler
+JavaHandler <|-- RelativeAttrJavaHandler
+JavaHandler <|-- MethodJavaHandler
+JavaHandler <|-- SetLPAttrJavaHandler
+JavaHandler <|-- SetMPAttrJavaHandler
+
+@enduml

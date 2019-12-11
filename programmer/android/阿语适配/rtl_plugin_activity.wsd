@@ -1,0 +1,17 @@
+@startuml rlt_plugin_activity
+
+start
+
+:启动rtl任务;
+:获取待适配文件列表;
+repeat
+  :获取文件文本;
+  repeat
+  :处理文本;
+  repeat while (有未执行处理器?)
+  :输出处理结果到文件;
+repeat while (有未处理文件?)
+
+stop
+
+@enduml

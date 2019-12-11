@@ -1,0 +1,166 @@
+@startuml lint_uml
+
+'分析Android工程或文件'
+class LintDriver {
+    scope: EnumSet<Scope> /'可分析的文件范围集合'/
+    projectRoots: Collection<Project> /'待分析的工程目录集合'/
+    listeners: MutableList<LintListener> /'lint执行过程回调'/
+    applicableDetectors: List<Detector> /'识别器实例列表'/
+    scopeDetectors: Map<Scope, MutableList<Detector>> /'根据范围快速索引Detector'/
+    analyze()
+    checkProject()
+    runFileDetectors()
+}
+LintDriver --> IssueRegistry
+'提供检查的Issue列表'
+class IssueRegistry {
+    issues: List<Issue>
+    createDetectors()
+}
+IssueRegistry <|-- JarFileIssueRegistry
+'获取jar Lint-Registry-v2中注册ISSUE'
+class JarFileIssueRegistry {
+    jarFile: File
+    registry: IssueRegistry
+}
+IssueRegistry <|-- BuiltinIssueRegistry
+'内建的lint检查规则'
+class BuiltinIssueRegistry {
+
+}
+IssueRegistry <|-- CompositeIssueRegistry
+'组合issue'
+class CompositeIssueRegistry {
+
+}
+LintDriver --> LintClient
+LintDriver --> LintRequest
+'运行lint的请求'
+class LintRequest {
+    projects: Collection<Project>
+    files: List<File> /'lint检测文件列表'/
+    getScope() /'检测文件范围'/
+}
+'提供lint分析需要的信息，IDE或其他需要实现lint支持的工具会拓展它来实现log，展示错误等'
+class LintClient {
+    xmlParser: XmlParser
+    report()
+    log()
+    getUastParser()
+    findGlobalRuleJars() /'查找全局的自定义的lint规则的jar包：~/.android/lint/或$ANDROID_LINT_JARS'/
+    findRuleJars() /'查找自定义的lint规则'/
+    initializeProjects()
+}
+LintRequest --> LintClient
+'Intellij(Android Studio)中执行lint'
+IntellijLintClient <|-- LintClient
+'批量进行lint检查'
+BatchLintClient <|-- LintClient
+'针对当前编辑器中单个文件执行lint检查'
+EditorLintClient <|-- LintClient
+'lint命令行，在sdk/tools/lib/lint-26.0.0-dev.jar中'
+LintCliClient <|-- LintClient
+LintDriver --> Scope
+'detector识别的文件集范围'
+enum Scope {
+
+}
+LintDriver --> LintBaseline
+'lint baseline是之前运行lint收集到的警告'
+class LintBaseline {
+
+}
+LintDriver --> Configuration
+'lint配置文件定义了哪些规则被包含，哪些规则被移除，哪些警告被忽略'
+class Configuration {
+
+}
+LintRequest --> Project
+class Project {
+    Configuration configuration
+    List<File> proguardFiles
+    List<File> manifestFiles
+    readManifest()
+    List<File> getSubset() /'返回待检测的文件列表，如果为null，则检测整个工程'/
+}
+LintDriver --> ResourceVisitor
+'用于运行在资源文件上的Detector上的visitor'
+class ResourceVisitor {
+    XmlParser parser
+    List<XmlScanner> allDetectors
+    visitFile()
+}
+ResourceVisitor --> XmlScanner
+'detectors实现它用来扫描xml文件'
+interface XmlScanner {
+    getApplicableElements() /'返回detectors想要分析的元素列表'/
+    visitElement()
+    visitElementAfter()
+    getApplicableAttributes() /'返回detectors想要分析的元素列表'/
+    visitAttribute()
+    visitDocument()
+    appliesTo() /'应用给定的文件夹类型'/
+} 
+FileScanner <|.. XmlScanner
+interface FileScanner {
+    beforeCheckFile()
+    afterCheckFile()
+}
+XmlScanner ..> Element
+interface Element {
+
+}
+Node <|.. Element
+XmlScanner ..> Attr
+Node <|.. Attr
+XmlScanner ..> Document
+Node <|.. Document
+LintDriver --> UElementVisitor
+'用于基于Java AST的detector上的visitor'
+class UElementVisitor {
+    parser: UastParser
+    detectors: List<Detector>
+    visitFile()
+}
+UElementVisitor --> LintCliUastParser
+'Java AST解析器'
+class LintCliUastParser {
+
+}
+DefaultUastParser <|-- LintCliUastParser
+class DefaultUastParser {
+
+}
+UastParser <|.. DefaultUastParser
+class UastParser {
+    evaluator: JavaEvaluator
+}
+UastParser --> JavaEvaluator
+'结构判断方法'
+class JavaEvaluator {
+    extendsClass
+    implementsInterface
+}
+JavaEvaluator <|-- DefaultJavaEvaluator
+UElementVisitor ..> UFile
+'uast文件'
+interface UFile {
+     accept(visitor: UastVisitor)
+}
+UElement <|.. UFile
+UAnnotated <|.. UFile
+UElementVisitor ..> SuperclassPsiVisitor
+class SuperclassPsiVisitor {
+    
+}
+AbstractUastVisitor <|-- SuperclassPsiVisitor
+UastVisitor <|-- AbstractUastVisitor
+UElementVisitor ..> DelegatingPsiVisitor
+'执行给定方法调用的ast搜索，根据uast的各语法分析回调，调用相应detector回调'
+class DelegatingPsiVisitor {
+
+}
+DispatchPsiVisitor <|-- DelegatingPsiVisitor
+AbstractUastVisitor <|.. DispatchPsiVisitor
+
+@enduml

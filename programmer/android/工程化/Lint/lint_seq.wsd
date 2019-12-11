@@ -1,0 +1,70 @@
+@startuml lint_seq
+
+LintPlugin -> LintStandaloneTask: createTask
+LintStandaloneTask -> ReflectiveLintRunner: runLint
+ReflectiveLintRunner -> LintGradleExecution: analyze
+LintGradleExecution -> LintCliClient: run
+LintDriver -> LintDriver: analyze
+activate LintDriver #dd5039
+LintDriver -> LintClient: performInitializeProjects
+LintDriver -> LintDriver: registerCustomDetectors
+'找自定义lint规则jar包'
+LintDriver -> LintClient: findRuleJars
+LintDriver --> LintClient: findGlobalRuleJars
+LintDriver -> JarFileIssueRegistry: get
+activate JarFileIssueRegistry
+'从jar包中读取Lint-Registry-v2注册的IssueRegistry'
+JarFileIssueRegistry -> JarFileIssueRegistry: findRegistries
+'反射实例化jar中注册的IssueRegistry'
+JarFileIssueRegistry -> JarFileIssueRegistry: loadIssueRegistry
+deactivate JarFileIssueRegistry
+LintDriver -> LintDriver: computeDetectors
+activate LintDriver #00FF7F
+LintDriver -> Project: getConfiguration
+'根据issue设置反射实例化Detector'
+LintDriver -> IssueRegistry: createDetectors
+'检测识别器识别范围是否正确'
+LintDriver -> LintDriver: validateScopeList
+deactivate LintDriver
+LintDriver -> LintDriver: checkProject
+activate LintDriver #00FF7F
+LintDriver -> Detector: beforeCheckRootProject
+LintDriver -> Detector: beforeCheckEachProject
+LintDriver -> LintDriver: runFileDetectors
+activate LintDriver #f1c40f
+LintDriver -> LintDriver: createXmlContext
+'解析xml文件生成Document'
+LintDriver -> XmlParser: parseXml
+LintDriver -> ResourceVisitor: visitFile
+ResourceVisitor -> Detector: visitDocument|visitElement|visitAttribute
+LintDriver -> LintDriver: checkIndividualResources
+activate LintDriver #008EE6
+LintDriver -> LintDriver: checkResourceFolder
+LintDriver -> LintDriver: checkResFolder
+deactivate LintDriver
+LintDriver -> LintDriver: checkIndividualJavaFiles
+activate LintDriver #008EE6 
+LintDriver -> LintDriver: visitJavaFiles
+LintDriver -> LintClient: getUastParser
+LintDriver -> UElementVisitor: visitFile
+UElementVisitor -> LintCliUastParser: parse
+'使用uast执行java&kt文件解析成ast，返回UFile'
+UElementVisitor -> UFile: accept
+'回调各解析部分'
+UFile -> DelegatingPsiVisitor: visitCallExpression
+DelegatingPsiVisitor -> SourceCodeScanner: visitMethodCall
+DelegatingPsiVisitor -> SourceCodeScanner: visitConstructor
+UFile -> DelegatingPsiVisitor: visitMethod
+DelegatingPsiVisitor -> SourceCodeScanner: visitAnnotationUsage
+UFile -> DelegatingPsiVisitor: visitAnnotation
+DelegatingPsiVisitor -> SourceCodeScanner: visitAnnotationUsage
+LintDriver -> LintDriver: checkJava
+LintDriver -> LintDriver: checkClasses
+LintDriver -> LintDriver: checkBuildScripts
+LintDriver -> LintDriver: checkProGuard
+LintDriver -> LintDriver: checkProperties
+deactivate LintDriver
+deactivate LintDriver
+deactivate LintDriver
+
+@enduml

@@ -1,0 +1,114 @@
+@startuml uast_uml
+
+'调用表达式(方法/构造函数，数组初始化)'
+class UCallExpression {
+    methodName: String
+    receiver: UExpression? /'`a.b.[c()]`receiver是`a.b`'/
+    receiverType: PsiType
+}
+UExpression <|.. UCallExpression
+'表达式或语句'
+interface UExpression {
+    evaluate() /'返回表达式的值'/
+    getExpressionType()
+}
+UElement <|.. UExpression
+'Uast元素'
+interface UElement {
+    uastParent: UElement
+    sourcePsi: PsiElement /'UElement下不一定有PsiElement'/
+    asRenderString() /'返回源代码文件字符串'/
+    asSourceString() /'返回源代码文件字符串'/
+}
+UAnnotated <|.. UExpression
+UExpression --> PsiType
+'java类型(原始、数组、class)'
+class PsiType {
+
+}
+PsiType <|-- PsiClassType
+'class类型'
+class PsiClassType {
+
+}
+UElement --> PsiElement
+'PSI树元素'
+class PsiElement {
+
+}
+PsiElement <|.. PsiStatement
+'java语句'
+interface PsiStatement {
+
+}
+PsiStatement <|.. PsiReturnStatement
+PsiElement <|.. PsiSwitchBlock
+'java switch语句或表达式'
+interface PsiSwitchBlock {
+
+}
+PsiSwitchBlock <|.. PsiSwitchExpression
+PsiExpression <|.. PsiSwitchExpression
+class PsiSwitchExpression {
+
+}
+UCallExpression --> UastCallKind
+'UCallExpression的类型'
+class UastCallKind {
+
+}
+UExpression <|.. UExpressionList
+'泛型列表'
+interface UExpressionList {
+    expressions: List<UExpression>
+    kind: UastSpecialExpressionKind   
+}
+UExpression <|.. UBlockExpression
+'代码块'
+interface UBlockExpression {
+
+}
+UExpression <|.. UJumpExpression
+'jump表达式(break / continue / yield / return)'
+interface UJumpExpression {
+    label: String
+}
+UJumpExpression <|.. UBreakExpression
+'break表达式'
+interface UBreakExpression {
+
+}
+UExpression <|.. UDeclarationsExpression
+'声明列表`int a = 4, b = 3`'
+interface UDeclarationsExpression {
+    declarations: List<UDeclaration>
+}
+UDeclarationsExpression --> UDeclaration
+'声明'
+interface UDeclaration {
+
+}
+UElement <|.. UDeclaration
+PsiJvmModifiersOwner <|.. UDeclaration
+UAnnotated <|.. UDeclaration
+
+UExpression <|.. UReferenceExpression
+UResolvable <|.. UReferenceExpression
+interface UResolvable {
+    resolve(): PsiElement
+}
+interface UReferenceExpression{
+    resolvedName: String /'引用的名字'/
+}
+UExpression <|.. UThrowExpression
+UExpression <|.. UInstanceExpression
+ULabeled <|.. UInstanceExpression
+UResolvable <|.. UInstanceExpression
+UInstanceExpression <|.. USuperExpression
+'super表达式'
+class USuperExpression {
+
+}
+UInstanceExpression <|.. UThisExpression
+
+@enduml

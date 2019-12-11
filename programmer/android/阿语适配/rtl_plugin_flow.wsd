@@ -1,0 +1,13 @@
+@startuml rlt_plugin_flow
+
+start
+:rtl适配规则梳理;
+:替换规则分类;
+:替换规则实现;
+:发布rtl-plugin插件;
+:项目集成rtl-plugin插件;
+:配置rtl-plugin插件;
+:执行rtl自动化适配;
+stop
+
+@enduml
