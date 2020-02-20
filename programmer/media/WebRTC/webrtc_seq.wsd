@@ -1,0 +1,58 @@
+@startuml webrtc_seq
+
+== 以下多人语音房方案：房间里每2个用户间创建单独的RTCPeerConnection，这对流量要求很大 ==
+
+== 进房 ==
+
+ClientA -> Server : join room(roomid)
+Server -> ClientA : join room success(socketid)
+ClientA -> ClientA : create RTCPeerConnection \ncreate local stream \nadd audio/video track to local stream \nset icecandidate listener \nset remote stream track listener
+
+Server <- ClientB : join room(roomid)
+Server -> ClientB : join room success(all in room socketids)
+ClientB -> ClientB : create RTCPeerConnection \ncreate local stream \nadd audio/video track to local stream \nset icecandidate listener \nset remote stream track listener
+
+Server -> ClientA : notify ClientB join room(ClientB socketid)
+
+== 媒体协商 ==
+
+ClientA -> ClientA : create offer \nset offer listener
+ClientA -> ClientA : offer listener called, get offer \nsetLocalDescription
+ClientA -> Server : send offer
+Server -> ClientB : send ClientA offer
+ClientB -> ClientB : ClientA offer setRemoteDescription
+ClientB -> ClientB : create answer \nset answer listener
+ClientB -> ClientB : answer listener called, get answer \nsetLocalDescription
+ClientB -> Server : send answer
+Server -> ClientA : send ClientB answer
+ClientA -> ClientA : ClientB answer setRemoteDescription
+
+== 收集候选者，建立连接 ==
+
+ClientA -> ClientA : icecandidate listener called, get icecandidate
+ClientA -> Server : send icecandidate
+Server -> ClientB : send ClientA icecandidate
+ClientB -> ClientB : add ClientA icecandidate
+ClientB -> ClientB : icecandidate listener called, get icecandidate
+ClientB -> Server : send icecandidate
+Server -> ClientA : send ClientB icecandidate
+ClientA -> ClientA : add ClientB icecandidate
+
+== 媒体数据传输 ==
+
+ClientA -> ClientA : get local stream
+ClientA -> ClientB : push ClientA stream
+ClientB -> ClientB : receive ClientA stream \nshow ClientA stream
+
+ClientB -> ClientB : get local stream
+ClientB -> ClientA : push ClientB stream
+ClientA -> ClientA : receive ClientB stream \nshow ClientB stream
+
+== 退房 ==
+
+ClientA -> Server : leave room(roomid)
+Server -> ClientA : leave room success
+ClientA -> ClientA : close RTCPeerConnection \nclose local stream
+
+
+@enduml
