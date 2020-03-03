@@ -1,0 +1,87 @@
+@startuml aab_bundle_tool_class
+
+class AppBundle {
+    buildFromZip(ZipFile bundleFile)
+    buildFromModules
+}
+AppBundle.Builder <.. AppBundle
+class AppBundle.Builder {
+    setModules(ImmutableMap<BundleModuleName, BundleModule> modules)
+    setMasterPinnedResources(ImmutableSet<ResourceId> masterPinnedResources)
+    setBundleConfig(BundleConfig bundleConfig)
+    setBundleMetadata(BundleMetadata bundleMetadata)
+}
+BundleModule <-- AppBundle
+'bundle所有资源管理模块'
+class BundleModule {
+     isBaseModule()
+     Optional<ResourceTable> getResourceTable()
+     Optional<Assets> getAssetsConfig()
+     Optional<NativeLibraries> getNativeConfig()
+     Optional<ApexImages> getApexConfig()
+     ImmutableMap<ZipPath, ModuleEntry> getEntryMap()
+     ImmutableCollection<ModuleEntry> getEntries()
+}
+ResourceTable <.. BundleModule
+'记录资源在项目中引用情况'
+class ResourceTable {
+    List<Resources.Package> getPackageList()
+}
+'单个资源实体'
+ResourceTableEntry <.. ResourceTable
+abstract class ResourceTableEntry {
+    Package getPackage()
+    Type getType()
+    Entry getEntry()
+    ResourceId getResourceId()
+}
+Resources.Package <.. ResourceTable 
+class Resources.Package {
+    List<Resources.Type> getTypeList()
+}
+Resources.Type <.. Resources.Package
+class Resources.Type {
+    String getName()
+    List<Resources.Entry> getEntryList()
+}
+Resources.Entry <.. Resources.Type
+class Resources.Entry {
+    String getName()
+    List<Resources.ConfigValue> getConfigValueList()
+}
+Resources.ConfigValue <.. Resources.Entry
+class Resources.ConfigValue {
+    String getLocale()
+}
+Resources.Value <-- Resources.ConfigValue
+Resources.Item <.. Resources.Value
+Resources.String <.. Resources.Item
+
+Assets <.. BundleModule
+NativeLibraries <.. BundleModule
+ApexImages <.. BundleModule
+ModuleEntry <.. BundleModule
+'模块内内容实体'
+class ModuleEntry {
+    InputStream getContent()
+    ZipPath getPath()
+    isDirectory()
+}
+''
+BundleConfig <-- AppBundle
+class BundleConfig {
+
+}
+''
+BundleMetadata <-- AppBundle
+class BundleMetadata {
+
+}
+'模块名管理'
+BundleModuleName <-- AppBundle
+class BundleModuleName {
+    isValid(String name)
+    getName()
+}
+
+@enduml

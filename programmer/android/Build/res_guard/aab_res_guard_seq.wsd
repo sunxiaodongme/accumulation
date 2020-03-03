@@ -1,0 +1,37 @@
+@startuml aab_res_guard_seq
+
+AabResGuardTask --> ObfuscateBundleCommand : execute
+==使用bundletool解析zip文件为AppBundle==
+ObfuscateBundleCommand --> AppBundleAnalyzer : analyze
+AppBundleAnalyzer --> AppBundle : buildFromZip
+==过滤文件==
+ObfuscateBundleCommand --> BundleFileFilter : filter
+BundleFileFilter --> BundleFileFilter : filterBundleModule
+BundleFileFilter --> BundleFileFilter : updateLibDirectory
+BundleFileFilter --> BundleFileFilter : filterMetaData
+==过滤字符串==
+ObfuscateBundleCommand --> BundleStringFilter : filter
+BundleStringFilter --> BundleStringFilter : obfuscateBundleModule
+BundleStringFilter --> BundleStringFilter : obfuscateResourceTable
+==重复res文件合并==
+ObfuscateBundleCommand --> DuplicatedResourcesMerger : merge
+DuplicatedResourcesMerger --> DuplicatedResourcesMerger : mergeBundleModule
+DuplicatedResourcesMerger --> DuplicatedResourcesMerger : mergeResourcesTable
+==res资源混淆==
+ObfuscateBundleCommand --> ResourcesObfuscator : obfuscate
+ResourcesObfuscator --> ResourcesMappingParser : parse(用于增量更新)
+ResourcesObfuscator --> ResourcesObfuscator : generateObfuscatedEntryFilesFromMapping
+ResourcesObfuscator --> ResourcesObfuscator : generateResourceMappingRule
+ResourcesObfuscator --> ResourcesObfuscator : obfuscateModuleEntries
+ResourcesObfuscator --> ResourcesObfuscator : obfuscateBundleModule
+ResourcesObfuscator --> ResourcesObfuscator : obfuscateResourceTable
+==使用bundletool将AppBundle写入文件==
+ObfuscateBundleCommand --> AppBundlePackager : execute
+==签名==
+AppBundlePackager --> AppBundleSerializer : writeToDisk
+AppBundleSerializer --> AppBundleSigner : execute
+AppBundleSigner --> JarSigner : sign
+JarSigner --> OpenJDKJarSigner : sign
+OpenJDKJarSigner --> Process : waitFor
+
+@enduml

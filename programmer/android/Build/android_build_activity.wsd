@@ -1,0 +1,128 @@
+@startuml android_build_activity
+
+'Android应用程序插件'
+class AppPlugin {
+
+}
+AbstractAppPlugin <|-- AppPlugin
+abstract class AbstractAppPlugin {
+    createTaskManager() : ApplicationTaskManager
+}
+BasePlugin <|-- AbstractAppPlugin
+abstract class BasePlugin {
+    configureProject()
+    configureExtension()
+    createTasks()
+    createAndroidTasks()
+}
+Plugin <|.. BasePlugin
+'gradle插件接口'
+interface Plugin<T> {
+    '插件执行方法'
+    apply(T var1)
+}
+ProjectOptions <-- BasePlugin
+'工程选项，来自命令行或执行环境'
+class ProjectOptions {
+
+}
+Project <-- BasePlugin
+'表示一个gradle工程，在gradle配置阶段完成创建'
+class Project {
+
+}
+ExtensionAware <|.. Project
+'关注拓展'
+interface ExtensionAware {
+
+}
+'关注插件'
+PluginAware <|.. Project
+interface PluginAware {
+
+}
+PluginManager <.. PluginAware
+interface PluginManager {
+
+}
+BaseExtension <-- BasePlugin
+AndroidConfig <|.. BaseExtension
+VariantManager <-- BasePlugin
+'变体管理器'
+class VariantManager {
+    addVariant(BaseVariantData variantData)
+    createAndroidTasks()
+    createTasksForVariantData(VariantScope variantScope)
+}
+VariantModel <|.. VariantManager
+'提供关于构建类型，产品flavor和签名配置信息'
+interface VariantModel {
+
+}
+VariantScope <-- VariantManager
+'变体范围包含特定变体的数据'
+interface VariantScope {
+
+}
+TaskManager <-- BasePlugin
+'Android工程task管理器'
+class ApplicationTaskManager {
+    /'Android构建task都是在这创建的'/
+    createTasksForVariantScope(VariantScope variantScope)
+    /'动态模块相关task'/
+    createDynamicBundleTask(VariantScope scope)
+}
+TaskManager <|-- ApplicationTaskManager
+class TaskManager {
+    /'在脚本评估前创建task，这些task可被自定义task引用'/
+    createTasksBeforeEvaluate()
+}
+TaskFactoryImpl <-- TaskManager
+class TaskFactoryImpl {
+
+}
+TaskFactory <|.. TaskFactoryImpl
+interface TaskFactory {
+    containsKey(name: String)
+    findByName(name: String): Task
+    fun register(
+        taskName: String,
+        action: Action<in Task>
+    ): TaskProvider<Task>
+}
+TaskContainer <-- TaskFactory
+'task管理容器'
+interface TaskContainer  {
+
+}
+Task <.. TaskFactory
+'具体task'
+interface Task {
+
+}
+
+PerModuleBundleTask <.. ApplicationTaskManager
+'压缩模块bundle元素成一个zip文件'
+class PerModuleBundleTask {
+
+}
+AndroidVariantTask <|-- PerModuleBundleTask
+PackageBundleTask <.. ApplicationTaskManager
+'用所有动态模块生成.aab'
+class PackageBundleTask {
+    bundleModules()
+}
+AndroidVariantTask <|-- PackageBundleTask
+DefaultTask <|-- AndroidVariantTask
+AbstractTask <|-- DefaultTask
+TaskInternal <|-- AbstractTask
+Task <-- TaskInternal
+VariantAwareTask <|.. AndroidVariantTask
+FinalizeBundleTask <.. ApplicationTaskManager
+'拷贝.aab到最终目录，如果不是debug变体且证书有效，签名证书'
+class FinalizeBundleTask {
+    copyAndFinalizeBundle()
+}
+AndroidVariantTask <|-- FinalizeBundleTask
+
+@enduml
