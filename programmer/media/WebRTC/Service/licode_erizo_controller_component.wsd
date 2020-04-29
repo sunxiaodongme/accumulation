@@ -1,0 +1,77 @@
+@startuml licode_erizo_controller_component
+
+package "Interface" {
+    [erizoController.js]
+}
+
+package "Communicate(与nuve&ErizoAgent通信)" {
+    [erizoController.js] --> [ecCloudHandler.js]
+}
+
+package "rpc" {
+    [amqper.js] - amqp
+    [ecCloudHandler.js] --> [amqper.js]
+    [amqper.js] --> [rpcPublic.js]
+}
+
+package "Room(房间管理))" {
+    [erizoController.js] --> [Room.js]
+    [Room.js] --> [RoomController.js]
+    [RoomController.js] --> [ErizoList.js]
+}
+
+package "Client(信令客户端)" {
+    [Room.js] --> [Client.js]
+}
+
+package "Channel(Client Socket管理)" {
+    [Channel.js] - io.socket
+    [Client.js] --> [Channel.js]
+}
+
+package "Stream(音视频流)" {
+    [RoomController.js] --> [Stream.js]
+    [Client.js] --> [Stream.js]
+}
+
+package "ErizoAgent(ErizoJS管理)" {
+    [ecCloudHandler.js] --> [erizoAgent.js]
+}
+
+package "ErizoJS(封装了WebRTC)" {
+    [erizoAgent.js] --> [erizoJS.js]
+    [erizoJS.js] --> [erizoJSController.js]
+    [erizoJS.js] --> [amqper.js]
+}
+
+package "Client(媒体客户端)" {
+    [erizoJSController.js] --> [client.js]
+    [client.js] --> [Connection.js]
+}
+
+package "Config" {
+    [erizoJS.js] --> [licode_config.js]
+    [erizoJS.js] --> [rtp_media_config.js]
+}
+
+package "发布订阅流媒体" {
+    [erizoJSController.js] --> [Publisher.js]
+    [Publisher.js] --> [Subscriber.js]
+}
+
+package "ROV" {
+    [erizoJSController.js] --> [rovReplManager.js]
+    [rovReplManager.js] --> [repl.js]
+    [rovReplManager.js] --> [rpcDuplexStream.js]
+    [rpcDuplexStream.js] --> [stream.js]
+}
+
+package "WebRTC" {
+    [erizoJS.js] --> [addon.cc]
+    [Connection.js] --> [sdp-transform.js]
+    [Connection.js] --> [SemanticSdp.js]
+    [Connection.js] --> [SessionDescription.js]
+    [Connection.js] --> [addon.cc]
+}
+
+@enduml

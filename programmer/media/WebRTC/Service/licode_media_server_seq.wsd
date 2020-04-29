@@ -1,0 +1,77 @@
+@startuml licode_media_server_seq
+
+==信令socket连接==
+
+erizoController --> erizoController : socket listen
+erizoController --> Channel : constructor
+Channel --> Channel : listenToSocketHandshakeEvents('token', 'reconnected', 'disconnect')
+Channel --> Channel : onToken
+Channel --> erizoController : emit('connected')
+
+==创建Room和信令Client==
+
+erizoController --> Room : getOrCreateRoom
+Room --> Client : createClient
+
+==publish(发布)==
+
+Client --> Client : listenToSocketEvents('publish')
+Client --> Client : onPublish
+Client --> Client : _publishErizo
+Client --> StreamManager : addPublishedStream(PublishedStream)
+Client --> RoomController : addPublisher
+RoomController --> ErizoJSController : addPublisher(rpc call)
+ErizoJSController --> ErizoJSController : getOrCreateClient
+ErizoJSController --> MClient : constructor
+ErizoJSController --> MClient : getOrCreateConnection
+MClient --> Connection : constructor
+ErizoJSController --> Publisher : constructor
+Publisher --> Connection : addMediaStream
+ErizoJSController --> Publisher : initMediaStream
+Connection --> Publisher : addMediaStream finished
+ErizoJSController --> Connection : init
+Connection --> addon.WebRtcConnection : init
+alt 需要创建offer
+    Connection --> addon.WebRtcConnection : createOffer
+end
+
+==subscribe(订阅)==
+
+Client --> Client : listenToSocketEvents('subscribe')
+Client --> Client : onSubscribe
+Client --> StreamManager : getPublishedStreamById
+Client --> PublishedStream : addDataSubscriber
+alt p2p
+    Client --> PublishedStream : addAvSubscriber
+    Client --> PublishedStream : updateAvSubscriberState(StreamStates.SUBSCRIBER_READY)
+    Client --> Client : sendMessage('publish_me')
+else
+    Client --> RoomController : addSubscriber
+    RoomController --> ErizoJSController : addSubscriber(rpc call)
+    ErizoJSController --> Publisher : getSubscriber
+    alt subscriber !== undefined
+        ErizoJSController --> ErizoJSController : removeSubscriber
+    end 
+    ErizoJSController --> ErizoJSController : getOrCreateClient
+    ErizoJSController --> MClient : getOrCreateConnection
+    ErizoJSController --> Publisher : addSubscriber
+    ErizoJSController --> Subscriber : initMediaStream
+    Connection --> Subscriber : addMediaStream finished
+    ErizoJSController --> Connection : init
+    alt offerFromErizo
+        ErizoJSController --> Connection : onGathered
+        ErizoJSController --> Connection : sendOffer
+    end
+end
+
+==webrtc连接消息处理==
+
+Client --> Client : listenToSocketEvents('connectionMessage')
+Client --> Client : onConnectionMessage
+Client --> RoomController: processConnectionMessageFromClient
+RoomController --> ErizoJSController : processConnectionMessage(rpc call)
+ErizoJSController --> Connection : onSignalingMessage
+
+
+
+@enduml

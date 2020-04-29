@@ -1,0 +1,41 @@
+@startuml licode_class
+
+class RoomController {
+    addPublisher()
+}
+
+class ErizoJSController {
+    processConnectionMessage() /'处理webrtc连接消息'/
+    processStreamMessage() /'处理webrtc媒体流消息'/
+    addPublisher() /'增加一个publisher，创建OneToManyProcessor和WebRtcConnection，WebRtcConnection成为OneToManyProcessor的publisher'/
+}
+
+'webrtc连接管理'
+class Connection {
+    _createWrtc() /'创建WebRtcConnection'/
+    _createMediaStream()
+    addMediaStream() /'向wrtc添加媒体流'/
+    removeMediaStream() /'从wrtc添加媒体流'/ 
+    addRemoteCandidate() /'从wrtc添加Candidate'/
+    onSignalingMessage() /'消息处理'/
+    createOffer()
+    sendOffer()
+    createAnswer()
+    sendAnswer()
+    _onStatusEvent() /'发射status_event事件'/
+    _onMediaStreamEvent() /发射'media_stream_event事件'/
+}
+
+class Publisher {
+    mediaStream
+    
+}
+
+Source <|-- Publisher
+NodeClass <|-- Source
+
+class Subscriber {
+
+}
+
+@enduml

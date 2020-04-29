@@ -1,0 +1,57 @@
+@startuml licode_nuve_component
+
+package "Interface(服务接口)" {
+    [nuve.js] - http
+}
+
+package "Authenticator(鉴权)" {
+    [nuve.js] --> [nuveAuthenticator.js]
+}
+
+package "Resource(业务逻辑)" {
+    [nuve.js] --> [roomsResource.js]
+    [nuve.js] --> [roomResource.js]
+    [nuve.js] --> [tokensResource.js]
+    [nuve.js] --> [servicesResource.js]
+    [nuve.js] --> [serviceResource.js]
+    [nuve.js] --> [usersResource.js]
+    [nuve.js] --> [userResource.js]
+}
+
+package "Registry(数据操作)" {
+    [nuveAuthenticator.js] --> [serviceRegistry.js]
+    [roomsResource.js] --> [serviceRegistry.js]
+    [roomsResource.js] --> [roomRegistry.js]
+    [roomResource.js] --> [serviceRegistry.js]
+    [roomResource.js] --> [roomRegistry.js]
+    [tokensResource.js] --> [serviceRegistry.js]
+    [tokensResource.js] --> [tokenRegistry.js]
+    [servicesResource.js] --> [serviceRegistry.js]
+    [serviceResource.js] --> [serviceRegistry.js]
+    [usersResource.js] --> [serviceRegistry.js]
+    [userResource.js] --> [serviceRegistry.js]
+}
+
+package "Communicate(与ErizoController通信)" {
+    [roomsResource.js] --> [cloudHandler.js]
+    [roomResource.js] --> [cloudHandler.js]
+    [tokensResource.js] --> [cloudHandler.js]
+    [usersResource.js] --> [cloudHandler.js]
+    [userResource.js] --> [cloudHandler.js]
+}
+
+package "rpc" {
+    [cloudHandler.js] --> [rpc.js]
+    [rpc.js] - amqp
+    [rpc.js] --> [cloudHandler.js]
+    [rpc.js] --> [rpcPublic.js]
+}
+
+database "mongo" {
+    [dataBase.js] - mongojs
+    [serviceRegistry.js]  --> [dataBase.js]
+    [roomRegistry.js]  --> [dataBase.js]
+    [tokenRegistry.js]  --> [dataBase.js]
+}
+
+@enduml
