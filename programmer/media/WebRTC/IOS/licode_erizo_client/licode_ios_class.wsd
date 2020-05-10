@@ -1,0 +1,7 @@
+@startuml licode_ios_class
+
+class ECStream {
+
+}
+
+@enduml

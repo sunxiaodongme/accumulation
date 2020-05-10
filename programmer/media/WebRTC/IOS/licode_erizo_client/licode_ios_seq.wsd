@@ -1,0 +1,205 @@
+@startuml licode_ios_seq
+
+MultiConferenceViewController -> MultiConferenceViewController : connect
+MultiConferenceViewController -> MultiConferenceViewController : initializeLocalStream
+MultiConferenceViewController -> ECStream : initLocalStreamWithOptions
+alt localStream hasVideo
+    MultiConferenceViewController -> RTCVideoTrack : addRenderer(RTCEAGLVideoView)
+end
+MultiConferenceViewController -> ECRoom : initWithDelegate
+MultiConferenceViewController -> RTCPeerConnectionFactory : init
+
+==createToken==
+
+MultiConferenceViewController -> Nuve : createTokenForRoomId
+Nuve -> Nuve : authorizationHeaderForUserName
+Nuve -> Nuve : performRequest \npost /rooms/roomId/tokens
+Nuve -> NSURLSession : dataTaskWithRequest
+NSURLSession -> Nuve : dataTaskWithRequest success
+Nuve -> MultiConferenceViewController : createTokenForRoomId success
+
+==socket connect==
+
+MultiConferenceViewController -> ECRoom : connectWithEncodedToken(token)
+ECRoom -> ECSignalingChannel : initWithEncodedToken
+ECRoom -> ECSignalingChannel : connect
+ECSignalingChannel -> ECSignalingChannel : get secure and host from token
+ECSignalingChannel -> SocketIOClient : initWithSocketURL
+ECSignalingChannel -> SocketIOClient : event on \nconnect \ndisconnect \nerror \nreconnect \nreconnectAttempt \nstatusChange \npublish_me \nonAddStream \nonRemoveStream \nconnection_message_erizo \nsignaling_message_peer \nonDataStream \nonUpdateAttributeStream
+ECSignalingChannel -> SocketIOClient : connect
+SocketIOClient -> ECSignalingChannel : connect event
+ECSignalingChannel -> SocketIOClient : emitWithAck: token
+SocketIOClient -> ECSignalingChannel : emit token ack
+ECSignalingChannel -> ECSignalingChannel : onSendTokenCallback
+
+==handle streams==
+
+ECSignalingChannel -> ECSignalingChannel : get streams from res to fill roomMetadata
+ECSignalingChannel -> ECRoom : signalingChannel & didConnectToRoom
+alt roomMeta p2p true
+    ECRoom -> ECRoom : _peerToPeerRoom=true
+end
+alt has streams
+    ECRoom -> ECStream : initWithStreamId
+end
+ECRoom -> ECStream : status=ECRoomStatusConnected
+ECRoom -> MultiConferenceViewController : didConnect
+MultiConferenceViewController -> ECStream : localStream.setAttributes
+
+==publish stream==
+
+MultiConferenceViewController -> ECRoom : publish(localStream)
+ECRoom -> ECClient : initWithDelegate
+ECRoom -> ECSignalingChannel : publish
+ECSignalingChannel -> SocketIOClient : emitWithAck: publish
+SocketIOClient -> ECSignalingChannel : emit publish ack
+ECSignalingChannel -> ECSignalingChannel : onPublishCallback
+alt publish res no streamId
+    ECSignalingChannel -> ECClient : signalingChannelPublishFailed
+else     
+    ECSignalingChannel -> SocketIOClient : get streamId \nerizoId \nconnectionId
+    ECSignalingChannel -> ECSignalingChannel : setSignalingDelegate
+    ECSignalingChannel -> ECClient : signalingChannelDidOpenChannel
+    ECClient -> ECRoom : appClientRequestICEServers
+    ECRoom -> ECRoom : get iceServers from _roomMetadata
+    ECClient -> ECClient : setupICEServers(iceServers)
+    ECClient -> ECClient : state=ECClientStateReady
+    ECClient -> ECRoom : didChangeState
+    alt _client == publishClient
+        alt state == ECClientStateDisconnected
+            ECRoom -> NSTimer : publishingStatsTimer invalidate
+        else state == ECClientStateConnected
+            ECRoom -> NSTimer : scheduledTimerWithTimeInterval
+            NSTimer -> ECRoom : gatherPublishingStats
+        end
+    end
+    ECSignalingChannel -> ECClient : readyToPublishStreamId
+    ECClient -> ECClient : set _streamId \nset _peerSocketId
+    alt _peerSocketId
+        ECClient -> ECClient : _isInitiator = NO
+    else         
+        ECClient -> ECClient : _isInitiator = YES
+    end
+    ECClient -> ECClient : startPublishSignaling
+    ECClient -> ECClient : state: ECClientStateConnecting
+    ECClient -> RTCPeerConnectionFactory : peerConnectionWithConfiguration
+    ECClient -> RTCPeerConnection : addStream:_localStream
+    ECClient -> RTCPeerConnection : offerForConstraints
+    RTCPeerConnection -> ECClient : create sdp offer
+    ECClient -> SDPUtils : didCreateSessionDescription
+    ECClient -> RTCPeerConnection : setLocalDescription
+    RTCPeerConnection -> ECClient : set local Description finish
+    ECClient -> ECSessionDescriptionMessage : initWithDescription
+    ECClient -> ECSignalingChannel : sendSignalingMessage
+    ECSignalingChannel -> SocketIOClient : emit: connectionMessage
+    SocketIOClient -> ECSignalingChannel : connection_message_erizo event
+    ECSignalingChannel -> ECSignalingChannel : onSocketSignalingMessage
+    ECSignalingChannel -> ECSignalingMessage : messageFromDictionary
+    alt !signalingDelegate
+        ECSignalingChannel -> ECRoom : clientDelegateRequiredForSignalingChannel
+        ECRoom -> ECClient : initWithDelegate
+        ECSignalingChannel -> ECClient : setStreamId
+        ECSignalingChannel -> ECClient : setPeerSocketId
+        ECSignalingChannel -> ECSignalingChannel : setSignalingDelegate
+    end
+    ECSignalingChannel -> ECClient : didReceiveMessage
+    ECClient -> ECClient : drainMessageQueueIfReady
+    ECClient -> ECClient : processSignalingMessage
+    alt message is kECSignalingMessageTypeOffer \nkECSignalingMessageTypeAnswer
+        ECClient -> RTCPeerConnection : setRemoteDescription
+    else message is kECSignalingMessageTypeCandidate
+        ECClient -> RTCPeerConnection : addIceCandidate
+    end
+end
+
+==subcribe stream==
+
+MultiConferenceViewController -> ECRoom : remoteStreams
+MultiConferenceViewController -> ECRoom : subscribe(remoteStreams)
+ECRoom -> ECClient : initWithDelegate
+ECRoom -> ECSignalingChannel : subscribe
+ECSignalingChannel -> SocketIOClient : emitWithAck: subscribe
+SocketIOClient -> ECSignalingChannel : emit subscribe ack
+ECSignalingChannel -> ECSignalingChannel : onSubscribeMCUCallback
+ECSignalingChannel -> ECClient : set streamId \nset erizoId \nset connectionId
+ECSignalingChannel -> ECSignalingChannel : setSignalingDelegate
+ECSignalingChannel -> ECClient : signalingChannelDidOpenChannel
+ECSignalingChannel -> ECClient : readyToSubscribeStreamId
+ECClient -> ECClient : _isInitiator = NO \nset _streamId \nset _peerSocketId
+ECClient -> ECClient : startSubscribeSignaling
+ECClient -> RTCPeerConnectionFactory : peerConnectionWithConfiguration
+ECClient -> RTCPeerConnection : offerForConstraints
+RTCPeerConnection -> ECClient : create sdp offer
+ECClient -> ECClient : didCreateSessionDescription
+
+==receive remote stream==
+
+RTCPeerConnection -> ECClient : didAddStream(RTCMediaStream)
+ECClient -> ECRoom : didReceiveRemoteStream
+ECClient -> ECClient : _streamsByStreamId
+ECClient -> MultiConferenceViewController : didSubscribeStream
+MultiConferenceViewController -> MultiConferenceViewController : watchStream
+MultiConferenceViewController -> ECPlayerView : initWithLiveStream
+MultiConferenceViewController -> view : addSubview(ECPlayerView)
+
+==onAddStream==
+
+SocketIOClient -> ECSignalingChannel : onAddStream event
+ECSignalingChannel -> ECSignalingChannel : onSocketAddStream
+ECSignalingChannel -> ECRoom : didStreamAddedWithId
+alt _publishStreamId
+    ECRoom -> MultiConferenceViewController : didPublishStream
+    alt _recordEnabled && !_peerToPeerRoom
+        ECRoom -> ECSignalingChannel : startRecording
+        ECSignalingChannel -> SocketIOClient : emitWithAck: startRecorder
+        SocketIOClient -> ECSignalingChannel : emit startRecorder ack
+        ECSignalingChannel -> ECRoom : didStartRecordingStreamId
+        ECRoom -> MultiConferenceViewController : didStartRecordingStream
+    end
+else
+    ECRoom -> MultiConferenceViewController : didAddedStream
+    MultiConferenceViewController -> ECRoom : subscribe
+end
+
+==onRemoveStream==
+
+SocketIOClient -> ECSignalingChannel : onAddStream event
+ECSignalingChannel -> ECSignalingChannel : onSocketRemoveStream
+ECSignalingChannel -> ECRoom : didRemovedStreamId
+ECRoom -> MultiConferenceViewController : didRemovedStream
+MultiConferenceViewController -> MultiConferenceViewController : removeStream
+MultiConferenceViewController -> ECPlayerView : removeFromSuperview
+ECRoom -> ECRoom : publishClient=null
+
+==publish_me==
+
+SocketIOClient -> ECSignalingChannel : publish_me event
+ECSignalingChannel -> ECSignalingChannel : onSocketPublishMe
+ECSignalingChannel -> ECRoom : didRequestPublishP2PStreamWithId
+ECRoom -> ECSignalingChannel : publishToPeerID
+
+==reveive message==
+
+SocketIOClient -> ECSignalingChannel : connection_message_erizo event
+SocketIOClient -> ECSignalingChannel : signaling_message_peer event
+ECSignalingChannel -> ECSignalingChannel : onSocketSignalingMessage
+ECSignalingChannel -> ECClient : didReceiveMessage
+alt kECSignalingMessageTypeOffer \nkECSignalingMessageTypeAnswer
+    ECClient -> ECClient : _messageQueue.insertObject 
+else kECSignalingMessageTypeCandidate
+    ECClient -> ECClient : _messageQueue.addObject
+end
+ECClient -> ECClient : drainMessageQueueIfReady
+ECClient -> ECClient : processSignalingMessage
+
+==leave==
+
+MultiConferenceViewController -> MultiConferenceViewController : leave
+MultiConferenceViewController -> MultiConferenceViewController : removeStream(remoteStreams)
+MultiConferenceViewController -> ECPlayerView : removeFromSuperview
+MultiConferenceViewController -> ECRoom : leave
+MultiConferenceViewController -> ECSignalingChannel : disconnect
+ECSignalingChannel -> SocketIOClient : disconnect
+
+
+@enduml

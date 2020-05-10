@@ -1,5 +1,51 @@
 @startuml licode_basic_demo_seq
 
-
+index.html -> script.js : startBasicExample
+script.js -> erizo.js : Erizo.Stream
+script.js -> script.js : createToken(username, role, roomId, \nroom, type, mediaConfiguration)
+script.js -> basicServer.js : createToken \nhttp post
+alt no roomId
+    basicServer.js -> basicServer.js : getOrCreateRoom(room, type, mediaConfiguration)
+    basicServer.js -> N.API.js : getRooms
+    alt no room
+        basicServer.js -> N.API.js : createRoom
+    end
+end
+basicServer.js -> N.API.js : createToken(roomId, username, role)
+basicServer.js -> script.js : createToken success, return token
+script.js -> erizo.js : Erizo.Room
+script.js -> erizo.js : Erizo.Room.addEventListener \nroom-connected \nstream-subscribed \nstream-added \nstream-removed \nstream-failed
+alt onlySubscribe
+    script.js -> erizo.js : Erizo.Room.connect
+else
+    script.js -> erizo.js : Erizo.Stream.addEventListener('access-accepted')
+    script.js -> erizo.js : Erizo.Stream.init
+    erizo.js ->  script.js: access-accepted event
+    script.js -> erizo.js : Erizo.Room.connect
+end
+basicServer.js -> script.js : room-connected event
+activate script.js
+script.js -> script.js : subscribeToStreams(roomEvent.streams)
+script.js -> erizo.js : Erizo.Room.subscribe
+alt !onlySubscribe
+    script.js -> erizo.js : Erizo.Room.publish(localStream)
+end
+alt autoSubscribe
+    script.js -> erizo.js : Erizo.Room.autoSubscribe
+end
+deactivate script.js
+basicServer.js -> script.js : stream-subscribed event
+activate script.js
+script.js -> script.js : create div \nstream.show
+deactivate script.js
+basicServer.js -> script.js : stream-added event
+activate script.js
+script.js -> script.js : subscribeToStreams
+script.js -> erizo.js : Erizo.Room.subscribe
+deactivate script.js
+basicServer.js -> script.js : stream-removed event
+activate script.js
+script.js -> script.js : remove videoContainer
+deactivate script.js
 
 @enduml
