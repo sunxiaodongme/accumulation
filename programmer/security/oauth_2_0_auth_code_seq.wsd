@@ -1,0 +1,15 @@
+@startuml oauth_2_0_auth_code_seq
+
+third_party_app -> auth_app : requestAuth(response_type=code, client_id, scope, redirect_uri)
+auth_app -> actor : ask permission for scope
+actor -> auth_app : auth
+auth_app -> auth_server : requestCode(response_type=code, client_id, scope)
+auth_server -> auth_app : responseCode(code)
+auth_app -> third_party_app : responseAuth(code) to redirect_uri
+third_party_app -> third_party_server : requestToken(code)
+third_party_server -> auth_server : requestToken(client_id, client_secret, grant_type=authorization_code, code)
+auth_server -> third_party_server : responseToken(\n{\n  "access_token":"ACCESS_TOKEN",\n  "token_type":"bearer",\n  "expires_in":2592000,\n  "refresh_token":"REFRESH_TOKEN",\n  "scope":"read",\n  "uid":100101,\n  "info":{...}\n})
+third_party_server -> third_party_app : responseToken(\n{\n  "access_token":"ACCESS_TOKEN",\n  "token_type":"bearer",\n  "expires_in":2592000,\n  "refresh_token":"REFRESH_TOKEN",\n  "scope":"read",\n  "uid":100101,\n  "info":{...}\n})
+third_party_app -> auth_server : requestContent(token)
+
+@enduml
