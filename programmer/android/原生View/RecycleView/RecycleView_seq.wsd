@@ -1,0 +1,39 @@
+@startuml RecycleView_seq
+
+Activity -> RecyclerView : setAdapter
+RecyclerView -> Adapter : registerAdapterDataObserver
+
+==notifyDataSetChanged流程==
+
+Adapter -> Adapter : notifyDataSetChanged
+Adapter -> AdapterDataObservable : notifyChanged
+AdapterDataObservable -> RecyclerViewDataObserver : onChanged
+RecyclerViewDataObserver -> State : mStructureChanged = true
+RecyclerViewDataObserver -> RecyclerView : processDataSetCompletelyChanged(true) \nmDispatchItemsChangedEvent = true \nmDataSetHasChangedAfterLayout = true
+RecyclerView -> RecyclerView : markKnownViewsInvalid
+RecyclerView -> ChildHelper : getUnfilteredChildCount
+ChildHelper -> RecyclerView : getChildCount
+RecyclerView -> ChildHelper : getUnfilteredChildAt
+ChildHelper -> RecyclerView : getChildAt
+RecyclerView -> Child.LayoutParams : mViewHolder
+RecyclerView -> RecyclerView : getChildViewHolderInt
+RecyclerView -> ViewHolder : addFlags(ViewHolder.FLAG_UPDATE | ViewHolder.FLAG_INVALID)
+RecyclerView -> RecyclerView : markItemDecorInsetsDirty
+RecyclerView -> Recycler : markKnownViewsInvalid
+RecyclerViewDataObserver -> RecyclerView : requestLayout
+
+==添加视图==
+
+RecyclerView -> RecyclerView : onMeasure
+RecyclerView -> RecyclerView : onLayout
+RecyclerView -> RecyclerView : dispatchLayoutStep1
+RecyclerView -> LinearLayoutManager : onLayoutChildren
+LinearLayoutManager -> LinearLayoutManager : detachAndScrapAttachedViews /'临时将子视图detach&scrap, scrap视图在回收前可被复用'/
+LinearLayoutManager -> LinearLayoutManager : layoutChunk
+LinearLayoutManager -> LayoutManager : addView
+LayoutManager -> LayoutManager : addViewInt
+LayoutManager -> ChildHelper : addView
+ChildHelper -> ChildHelper.Callback : addView
+ChildHelper.Callback -> RecyclerView : addView
+
+@enduml

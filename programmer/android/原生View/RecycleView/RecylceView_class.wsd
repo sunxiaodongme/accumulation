@@ -1,0 +1,85 @@
+@startuml RecycleView_class
+
+class RecyclerView {
+
+}
+
+ViewGroup <|-- RecyclerView
+ScrollingView <|.. RecyclerView
+NestedScrollingChild2 <|.. RecyclerView
+NestedScrollingChild3 <|.. RecyclerView
+
+LayoutManager <-- RecyclerView
+'测量和定位RecyclerView中的子视图，其不同实现，实现了不同形式的列表'
+abstract class LayoutManager {
+
+}
+LayoutManager <-- LinearLayoutManager
+class LinearLayoutManager {
+
+}
+ViewDropHandler <|.. LinearLayoutManager
+ScrollVectorProvider <|.. LinearLayoutManager
+
+'提供了view到特定数据集的绑定'
+Adapter <-- RecyclerView
+class Adapter {
+    notifyDataSetChanged()
+    registerAdapterDataObserver(@NonNull AdapterDataObserver observer)
+    unregisterAdapterDataObserver(@NonNull AdapterDataObserver observer)
+}
+AdapterDataObservable <-- Adapter
+class AdapterDataObservable {
+    registerObserver(T observer)
+    unregisterObserver(T observer)
+    unregisterAll()
+}
+Observable <|-- AdapterDataObservable
+
+RecyclerViewDataObserver <-- RecyclerView
+AdapterDataObserver <|-- RecyclerViewDataObserver
+
+State <-- RecyclerView
+'包含一些有用信息，如目标滚动位置，状态中可以包含任意数据，用资源id作为标识，可以用State在RecyclerView组件间传递数据'
+class State {
+    int STEP_START = 1;
+    int STEP_LAYOUT = 1 << 1;
+    int STEP_ANIMATIONS = 1 << 2;
+    int mLayoutStep = STEP_START /'布局步骤'/
+
+    int mTargetPosition = RecyclerView.NO_POSITION
+    SparseArray<Object> mData /'附加数据'/
+
+    int mItemCount = 0 /'adapter item count'/
+    boolean mStructureChanged = false /'是否结构性改变，notifyDataSetChanged的改变是结构性改变'/
+
+    int mFocusedItemPosition; /'聚焦位置'/
+    long mFocusedItemId; /'聚焦项id'/
+}
+
+Recycler <-- RecyclerView
+'管理废弃的、卸载的view重用，scrapped是还attach在RecyclerView上，但被标记为可移除'
+class Recycler {
+    ArrayList<ViewHolder> mAttachedScrap
+    ArrayList<ViewHolder> mChangedScrap
+    ArrayList<ViewHolder> mCachedViews
+    List<ViewHolder> mUnmodifiableAttachedScrap
+    RecycledViewPool mRecyclerPool
+
+    scrapView(View view) /'将attached视图scrap'/
+    
+}
+
+RecycledViewPool <-- Recycler
+'多个RecyclerView之间共享视图'
+class RecycledViewPool {
+
+}
+ViewCacheExtension <-- Recycler
+'提供了视图缓存附加层，可被开发者控制'
+class ViewCacheExtension {
+
+}
+
+
+@enduml
