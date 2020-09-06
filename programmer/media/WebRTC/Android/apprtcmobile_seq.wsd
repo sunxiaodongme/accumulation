@@ -1,0 +1,50 @@
+@startuml apprtcmobile_seq
+
+==初始化创建PeerConnectionFactory==
+
+CallActivity -> AppRTCClient : constructor
+
+==初始化创建PeerConnectionFactory==
+
+CallActivity -> PeerConnectionClient : constructor
+PeerConnectionClient -> PeerConnectionFactory : initialize
+CallActivity -> PeerConnectionClient : createPeerConnectionFactory
+PeerConnectionClient -> AudioDeviceModule : constructor
+PeerConnectionClient -> VideoEncoderFactory : constructor
+PeerConnectionClient -> VideoDecoderFactory : constructor
+PeerConnectionClient -> PeerConnectionFactory : builder
+
+==connect to room==
+
+CallActivity -> CallActivity : startCall
+CallActivity -> AppRTCClient : connectToRoom
+AppRTCClient -> WebSocketChannelClient : constructor
+AppRTCClient -> RoomParametersFetcher : makeRequest
+RoomParametersFetcher -> AppRTCClient : onSignalingParametersReady
+AppRTCClient -> CallActivity : onConnectedToRoom
+CallActivity -> CallActivity : createVideoCapturer
+CallActivity -> PeerConnectionClient : createPeerConnection
+
+==创建媒体流==
+
+PeerConnectionClient -> MediaConstraints : constructor
+PeerConnectionClient -> PeerConnectionFactory : createPeerConnection
+
+==媒体流展示==
+
+PeerConnectionClient -> PeerConnectionClient : createVideoTrack
+PeerConnectionClient -> VideoCapturer : initialize
+PeerConnectionClient -> VideoCapturer : startCapture
+PeerConnectionClient -> PeerConnectionFactory : createVideoTrack
+PeerConnectionClient -> VideoTrack : addSink
+VideoTrack -> ProxyVideoSink : onFrame
+ProxyVideoSink -> SurfaceViewRenderer : onFrame
+PeerConnectionClient -> PeerConnectionClient : createAudioTrack
+PeerConnectionClient -> PeerConnection : addTrack
+
+AppRTCClient -> WebSocketChannelClient : connect
+WebSocketChannelClient -> WebSocketConnection : connect
+WebSocketChannelClient -> WebSocketConnection : sendTextMessage
+WebSocketChannelClient -> WebSocketChannelClient : onWebSocketMessage
+
+@enduml

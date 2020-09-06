@@ -1,0 +1,37 @@
+@startuml WebRTC_Android_Api_Class
+
+/'PeerConnection所有资源创建工厂'/
+class PeerConnectionFactory {
+
+}
+
+MediaStream <.. PeerConnectionFactory
+
+/'媒体限制条件，创建媒体源时使用'/
+class MediaConstraints {
+
+}
+class MediaStream {
+
+}
+AudioTrack <-- MediaStream
+MediaStreamTrack <|-- AudioTrack
+
+VideoTrack <-- MediaStream
+MediaStreamTrack <|-- VideoTrack
+VideoSource <-- VideoTrack
+class VideoSource {
+
+}
+MediaSource <|-- VideoSource
+class MediaSource {
+    
+}
+VideoCapturer <-- VideoSource
+MediaConstraints <-- VideoSource
+
+class MediaStreamTrack {
+
+}
+
+@enduml

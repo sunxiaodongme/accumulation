@@ -1,0 +1,32 @@
+@startuml licode_basic_example_seq
+
+==创建Token==
+
+client -> basicServer.js : createToken
+alt req.roomId is null
+basicServer.js -> N.API : createToken
+else
+basicServer.js -> basicServer.js : getOrCreateRoom
+basicServer.js -> N.API : getRooms
+    alt room exist
+    basicServer.js -> client : return room
+    
+    else 
+    basicServer.js -> N.API : createRoom
+    basicServer.js -> client : return room
+    end
+end
+
+==获取房间列表==
+
+client -> basicServer.js : getRooms
+basicServer.js -> N.API : getRooms
+basicServer.js -> client : return rooms
+
+==获取房间用户==
+
+client -> basicServer.js : getUsers/:room
+basicServer.js -> N.API : getUsers
+basicServer.js -> client : return users
+
+@enduml

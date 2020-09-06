@@ -1,0 +1,80 @@
+@startuml SurfaceViewRenderer_class
+
+class SurfaceViewRenderer {
+
+}
+
+SurfaceView <|-- SurfaceViewRenderer
+SurfaceHolder.Callback <|.. SurfaceViewRenderer
+interface SurfaceHolder.Callback {
+    surfaceCreated(SurfaceHolder holder)
+    surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    surfaceDestroyed(SurfaceHolder holder)
+}
+
+VideoSink <|.. SurfaceViewRenderer
+interface VideoSink {
+    onFrame(VideoFrame frame)
+}
+VideoFrame <-- VideoSink
+/'视频帧'/
+class VideoFrame {
+    int rotation
+    long timestampNs
+}
+RefCounted <|.. VideoFrame
+/'webrtc中引用计数'/
+interface RefCounted {
+    retain()
+    release()
+}
+/'Buffer外部初始化到VideoFrame中'/
+Buffer <-- VideoFrame
+RefCounted <|.. Buffer
+Buffer <|.. I420Buffer
+Buffer <|.. TextureBuffer
+
+RendererCommon.RendererEvents <|.. SurfaceViewRenderer
+/'渲染事件通知'/
+class RendererCommon.RendererEvents {
+    onFirstFrameRendered()
+    onFrameResolutionChanged(int videoWidth, int videoHeight, int rotation)
+}
+
+SurfaceEglRenderer <-- SurfaceViewRenderer
+/'在Surface上展示视频流，判断是否是首帧或帧变化，发生渲染事件变更'/
+class SurfaceEglRenderer {
+
+}
+EglRenderer <|-- SurfaceEglRenderer
+/'在EGL Surface上展示视频流'/
+class EglRenderer {
+
+}
+VideoFrameDrawer <-- EglRenderer
+/'绘制视频帧'/
+class VideoFrameDrawer {
+    drawTexture()
+    drawFrame()
+}
+GlRectDrawer <.. VideoFrameDrawer
+GlRectDrawer <-- EglRenderer
+GlGenericDrawer <|--GlRectDrawer
+class GlGenericDrawer {
+    prepareShader()
+}
+GlShader <-- GlGenericDrawer
+/'处理OpenGL着色器'/
+class GlShader {
+
+}
+RendererCommon.GlDrawer <|.. GlGenericDrawer
+/'EGLSurface上渲染帧接口'/
+interface RendererCommon.GlDrawer {
+    drawOes()
+    drawRgb()
+    drawYuv()
+    release()
+}
+
+@enduml

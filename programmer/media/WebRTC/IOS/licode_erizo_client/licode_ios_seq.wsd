@@ -1,8 +1,27 @@
 @startuml licode_ios_seq
 
+==init local stream==
+
 MultiConferenceViewController -> MultiConferenceViewController : connect
 MultiConferenceViewController -> MultiConferenceViewController : initializeLocalStream
 MultiConferenceViewController -> ECStream : initLocalStreamWithOptions
+ECStream -> RTCPeerConnectionFactory : init
+ECStream -> ECStream : createLocalStream
+ECStream -> RTCPeerConnectionFactory : mediaStreamWithStreamId
+alt stream need video
+ECStream -> ECStream : generateVideoTracks
+ECStream -> ECStream : createLocalVideoTrack
+ECStream -> RTCPeerConnectionFactory : avFoundationVideoSourceWithConstraints
+ECStream -> RTCPeerConnectionFactory : videoTrackWithSource
+ECStream -> RTCMediaStream : addVideoTrack
+end
+alt stream need audio
+ECStream -> ECStream : generateAudioTracks
+ECStream -> ECStream : createLocalAudioTrack
+ECStream -> RTCPeerConnectionFactory : audioSourceWithConstraints
+ECStream -> RTCPeerConnectionFactory : audioTrackWithSource
+ECStream -> RTCMediaStream : addAudioTrack
+end
 alt localStream hasVideo
     MultiConferenceViewController -> RTCVideoTrack : addRenderer(RTCEAGLVideoView)
 end

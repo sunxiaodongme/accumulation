@@ -47,10 +47,6 @@
 			<real>20</real>
 			<key>italic</key>
 			<false/>
-			<key>strikethrough</key>
-			<false/>
-			<key>underline</key>
-			<false/>
 		</dict>
 	</dict>
 	<key>crossConnections</key>
