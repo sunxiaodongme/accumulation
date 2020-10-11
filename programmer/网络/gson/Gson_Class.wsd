@@ -1,0 +1,92 @@
+@startuml Gson_Class
+
+class Gson {
+
+}
+
+TypeAdapterFactory <-- Gson
+interface TypeAdapterFactory {
+    TypeAdapter<T> create(Gson gson, TypeToken<T> type)
+}
+
+TypeToken <.. TypeAdapterFactory
+/'表示一个泛型类型，对java原有类型的拓展'/
+class TypeToken<T> {
+    Class<? super T> rawType
+}
+Type <-- TypeToken
+interface Type {
+    String getTypeName()
+}
+
+TypeAdapter <-- TypeAdapterFactory
+/'将json转换为java对象'/
+abstract class TypeAdapter<T> {
+    write(JsonWriter out, T value)
+    T read(JsonReader in)
+}
+
+TypeAdapter <|-- ReflectiveTypeAdapterFactory.Adapter
+/'创建基于反射一个类字段和方法的Adapter的工厂'/
+class ReflectiveTypeAdapterFactory {
+
+}
+/'反射一个类字段和方法的Adapter'/
+class ReflectiveTypeAdapterFactory.Adapter {
+
+}
+TypeAdapterFactory <|.. ReflectiveTypeAdapterFactory
+ConstructorConstructor <-- ReflectiveTypeAdapterFactory
+/'构建特定类型实例对象'/
+class ConstructorConstructor {
+    Map<Type, InstanceCreator<?>> instanceCreators
+}
+InstanceCreator <-- ConstructorConstructor
+/'创建没有无参构造函数class的实例的接口'/
+interface InstanceCreator<T> {
+    T createInstance(Type type)
+}
+ReflectionAccessor <-- ConstructorConstructor
+UnsafeAllocator <.. ConstructorConstructor
+/'使用Unsafe实例化对象'/
+abstract class UnsafeAllocator {
+    <T> T newInstance(Class<T> c)
+}
+FieldNamingStrategy <-- ReflectiveTypeAdapterFactory
+/'Gson中提供自定义字段名的机制'/
+interface FieldNamingStrategy {
+    String translateName(Field f)
+}
+BoundField <-- ReflectiveTypeAdapterFactory.Adapter
+/'Gson key与Bean字段的处理'/
+abstract class BoundField {
+    boolean writeField(Object value)
+    void write(JsonWriter writer, Object value)
+    read(JsonReader reader, Object value)
+}
+BoundField <|-- ReflectiveTypeAdapterFactory.BoundField
+class ReflectiveTypeAdapterFactory.BoundField {
+
+}
+
+Excluder <-- ReflectiveTypeAdapterFactory
+/'选择哪些字段或类型要被忽略'/
+class Excluder {
+
+}
+
+ExclusionStrategy <-- Excluder
+/'一个策略决定一个字段或最高阶层的类是否应该被序列或反序列化'/
+interface ExclusionStrategy {
+     boolean shouldSkipField(FieldAttributes f)
+     boolean shouldSkipClass(Class<?> clazz)
+}
+FieldAttributes <.. ExclusionStrategy
+/'一个存储字段属性的对象'/
+class FieldAttributes {
+
+}
+Field <-- FieldAttributes
+
+
+@enduml

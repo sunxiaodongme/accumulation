@@ -1,0 +1,96 @@
+@startuml CameraCapturer_class
+
+class Camera2Enumerator {
+
+}
+CameraManager <-- Camera2Enumerator
+
+CameraEnumerator <|.. Camera2Enumerator
+interface CameraEnumerator {
+    String[] getDeviceNames()
+    isFrontFacing(String deviceName)
+    getSupportedFormats(String deviceName)
+    createCapturer(String deviceName)
+}
+CaptureFormat <-- CameraEnumerator
+class CaptureFormat {
+    int width
+    int height
+    FramerateRange framerate
+    int imageFormat
+}
+
+FramerateRange <-- CaptureFormat
+/'帧率范围'/
+class FramerateRange {
+    int min
+    int max
+}
+
+CameraVideoCapturer <.. CameraEnumerator
+interface CameraVideoCapturer {
+
+}
+VideoCapturer <|.. CameraVideoCapturer
+CameraVideoCapturer <|.. CameraCapturer
+class CameraCapturer {
+    createCameraSession()
+}
+CameraCapturer <|-- Camera2Capturer
+Camera2Session <.. Camera2Capturer
+class Camera2Session {
+    openCamera()
+    stop()
+}
+CameraSession <|.. Camera2Session
+CameraDevice <-- Camera2Session
+/'表示到Android相机设备的连接'/
+class CameraDevice {
+
+}
+CameraCaptureSession <-- Camera2Session
+/'对CameraDevice配置的捕获session'/
+class CameraCaptureSession {
+    
+}
+CameraStateCallback <.. Camera2Session
+CameraDevice.StateCallback <|.. CameraStateCallback
+/'相机设备状态回调接口'/
+interface CameraDevice.StateCallback {
+    onOpened(CameraDevice camera)
+    onClosed(CameraDevice camera)
+    onDisconnected(CameraDevice camera)
+    onError(CameraDevice camera, int error)
+}
+CaptureSessionCallback <.. CameraStateCallback
+CameraCaptureSession.StateCallback <|.. CaptureSessionCallback
+/'相机捕获session状态回调接口'/
+interface CameraCaptureSession.StateCallback {
+    onConfigured(CameraCaptureSession session)
+    onConfigureFailed(CameraCaptureSession session)
+    onReady(CameraCaptureSession session)
+    onActive(CameraCaptureSession session)
+    onCaptureQueueEmpty(CameraCaptureSession session)
+    onClosed(CameraCaptureSession session)
+    onSurfacePrepared(CameraCaptureSession session,
+                Surface surface)
+}
+SurfaceTextureHelper <-- Camera2Session
+/'用SurfaceTexture创建WebRTC VideoFrames'/
+class SurfaceTextureHelper {
+
+}
+
+CapturerObserver <-- VideoCapturer
+interface CapturerObserver {
+    onCapturerStarted(boolean success)
+    onCapturerStopped()
+    onFrameCaptured(VideoFrame frame)
+}
+CapturerObserver <|.. NativeCapturerObserver
+NativeCapturerObserver <-- VideoSource
+VideoSource <-- VideoTrack
+VideoSink <-- VideoTrack
+VideoSink <|.. SurfaceViewRenderer
+
+@enduml

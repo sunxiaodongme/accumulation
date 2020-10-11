@@ -14,23 +14,36 @@ PeerConnectionClient -> VideoEncoderFactory : constructor
 PeerConnectionClient -> VideoDecoderFactory : constructor
 PeerConnectionClient -> PeerConnectionFactory : builder
 
-==connect to room==
+==连接到信令房间==
 
 CallActivity -> CallActivity : startCall
 CallActivity -> AppRTCClient : connectToRoom
 AppRTCClient -> WebSocketChannelClient : constructor
 AppRTCClient -> RoomParametersFetcher : makeRequest
 RoomParametersFetcher -> AppRTCClient : onSignalingParametersReady
+AppRTCClient -> WebSocketChannelClient : connect
+WebSocketChannelClient -> WebSocketConnection : connect
+WebSocketChannelClient -> WebSocketConnection : sendTextMessage
+WebSocketChannelClient -> WebSocketChannelClient : onWebSocketMessage
 AppRTCClient -> CallActivity : onConnectedToRoom
-CallActivity -> CallActivity : createVideoCapturer
-CallActivity -> PeerConnectionClient : createPeerConnection
 
 ==创建媒体流==
 
+CallActivity -> CallActivity : createVideoCapturer
+alt file as camera
+    CallActivity -> FileVideoCapturer : constructor
+else screen capture enable
+    CallActivity -> CallActivity : createScreenCapturer
+else use camera2
+    CallActivity -> CallActivity : createCameraCapturer
+else
+    CallActivity -> CallActivity : createCameraCapturer
+end
+CallActivity -> PeerConnectionClient : createPeerConnection
 PeerConnectionClient -> MediaConstraints : constructor
 PeerConnectionClient -> PeerConnectionFactory : createPeerConnection
 
-==媒体流展示==
+==本地流媒体展示==
 
 PeerConnectionClient -> PeerConnectionClient : createVideoTrack
 PeerConnectionClient -> VideoCapturer : initialize
@@ -42,9 +55,57 @@ ProxyVideoSink -> SurfaceViewRenderer : onFrame
 PeerConnectionClient -> PeerConnectionClient : createAudioTrack
 PeerConnectionClient -> PeerConnection : addTrack
 
-AppRTCClient -> WebSocketChannelClient : connect
-WebSocketChannelClient -> WebSocketConnection : connect
-WebSocketChannelClient -> WebSocketConnection : sendTextMessage
-WebSocketChannelClient -> WebSocketChannelClient : onWebSocketMessage
+==远程流媒体展示==
+
+PeerConnectionClient -> PeerConnectionClient : getRemoteVideoTrack
+PeerConnectionClient -> PeerConnection : getTransceivers
+PeerConnectionClient -> RtpTransceiver : getReceiver().track
+PeerConnectionClient -> VideoTrack : addSink
+
+==媒体协商==
+
+alt 房主
+    CallActivity -> PeerConnectionClient : createOffer
+    PeerConnectionClient -> PeerConnection : createOffer
+    PeerConnection -> SDPObserver : onCreateSuccess
+    SDPObserver -> PeerConnection : setLocalDescription
+    PeerConnection -> SDPObserver : onSetSuccess
+    PeerConnectionClient -> CallActivity : onLocalDescription
+    CallActivity -> AppRTCClient : sendOfferSdp
+else 观众
+    AppRTCClient -> CallActivity : onRemoteDescription
+    CallActivity -> PeerConnectionClient : setRemoteDescription
+    PeerConnectionClient -> PeerConnection : setRemoteDescription
+    CallActivity -> PeerConnectionClient : createAnswer
+    PeerConnectionClient -> PeerConnection : createAnswer
+    PeerConnection -> SDPObserver : onCreateSuccess
+    SDPObserver -> PeerConnection : setLocalDescription
+    PeerConnection -> SDPObserver : onSetSuccess
+    PeerConnectionClient -> CallActivity : onLocalDescription
+    CallActivity -> AppRTCClient : sendAnswerSdp
+    PeerConnectionClient -> PeerConnectionClient : drainCandidates
+    alt 房主
+        AppRTCClient -> CallActivity : onRemoteDescription
+        CallActivity -> PeerConnectionClient : setRemoteDescription
+        PeerConnectionClient -> PeerConnection : setRemoteDescription
+        PeerConnectionClient -> PeerConnectionClient : drainCandidates
+    end
+end
+
+==收集候选人==
+
+PeerConnection -> PCObserver : onIceCandidate
+PeerConnectionClient -> CallActivity : onIceCandidate
+CallActivity -> AppRTCClient : sendLocalIceCandidate
+AppRTCClient -> CallActivity : onRemoteIceCandidate
+CallActivity -> PeerConnectionClient : addRemoteIceCandidate
+PeerConnectionClient -> PeerConnection : addIceCandidate
+
+PeerConnection -> PCObserver : onIceCandidatesRemoved
+PeerConnectionClient -> CallActivity : onIceCandidatesRemoved
+CallActivity -> AppRTCClient : sendLocalIceCandidateRemovals
+AppRTCClient -> CallActivity : onRemoteIceCandidatesRemoved
+CallActivity -> PeerConnectionClient : removeRemoteIceCandidates
+PeerConnectionClient -> PeerConnection : removeIceCandidates
 
 @enduml

@@ -1,0 +1,37 @@
+@startuml CameraCapturer_seq
+
+CallActivity -> Camera2Enumerator : createCapturer
+CallActivity -> PeerConnectionClient : createPeerConnection
+PeerConnectionClient -> PeerConnectionClient : createVideoTrack
+
+==用SurfaceTexture创建WebRTC VideoFrames==
+
+PeerConnectionClient -> SurfaceTextureHelper : create
+SurfaceTextureHelper -> GlUtil : generateTexture
+SurfaceTextureHelper -> SurfaceTexture : setOnFrameAvailableListener
+SurfaceTexture -> SurfaceTextureHelper : onFrameAvailable
+SurfaceTextureHelper -> SurfaceTexture : updateTexImage
+
+==捕获相机数据，生成WebRTC VideoFrames==
+
+PeerConnectionClient -> PeerConnectionFactory : createVideoSource
+PeerConnectionClient -> Camera2Capturer : initialize
+PeerConnectionClient -> Camera2Capturer : startCapture
+Camera2Capturer -> Camera2Capturer : createCameraSession
+Camera2Capturer -> Camera2Session : create
+Camera2Session -> Camera2Session : openCamera
+Camera2Session -> CameraManager : openCamera
+CameraManager -> Camera2Session : onOpened
+Camera2Session -> Surface : Surface(SurfaceTextureHelper.getSurfaceTexture())
+Camera2Session -> CameraDevice : createCaptureSession(Surface)
+CameraDevice -> Camera2Session : onConfigured
+Camera2Session -> SurfaceTextureHelper : startListening
+SurfaceTextureHelper -> Camera2Session : onFrame
+Camera2Session -> Camera2Capturer : onFrameCaptured
+Camera2Capturer -> NativeCapturerObserver : onFrameCaptured
+NativeCapturerObserver -> VideoSource : native
+VideoSource -> VideoTrack : native
+VideoTrack -> ProxyVideoSink : onFrame
+ProxyVideoSink -> SurfaceViewRenderer : onFrame
+
+@enduml

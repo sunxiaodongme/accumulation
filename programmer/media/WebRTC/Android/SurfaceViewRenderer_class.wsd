@@ -1,9 +1,9 @@
 @startuml SurfaceViewRenderer_class
 
+/'在SurfaceView上展示视频流'/
 class SurfaceViewRenderer {
 
 }
-
 SurfaceView <|-- SurfaceViewRenderer
 SurfaceHolder.Callback <|.. SurfaceViewRenderer
 interface SurfaceHolder.Callback {
@@ -33,6 +33,11 @@ Buffer <-- VideoFrame
 RefCounted <|.. Buffer
 Buffer <|.. I420Buffer
 Buffer <|.. TextureBuffer
+/'buffer存储一个单独纹理'/
+interface TextureBuffer {
+    Type getType()
+    Matrix getTransformMatrix()
+}
 
 RendererCommon.RendererEvents <|.. SurfaceViewRenderer
 /'渲染事件通知'/
@@ -49,7 +54,7 @@ class SurfaceEglRenderer {
 EglRenderer <|-- SurfaceEglRenderer
 /'在EGL Surface上展示视频流'/
 class EglRenderer {
-
+    renderFrameOnRenderThread() /'渲染帧'/
 }
 VideoFrameDrawer <-- EglRenderer
 /'绘制视频帧'/
@@ -76,5 +81,13 @@ interface RendererCommon.GlDrawer {
     drawYuv()
     release()
 }
+
+EglBase <-- EglRenderer
+/'EGL状态和处理EGLContext、EGLDisplay & EGLSurface的方法'/
+interface EglBase {
+    swapBuffers()
+}
+EglBase <|.. EglBase10
+EglBase <|.. EglBase14 
 
 @enduml

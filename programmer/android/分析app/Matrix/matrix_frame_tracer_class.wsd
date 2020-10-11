@@ -1,0 +1,103 @@
+@startuml maxtrix_frame_tracer_class
+
+class FrameTracer {
+
+}
+Tracer <|-- FrameTracer
+abstract class Tracer {
+    onAlive()
+    onDead()
+}
+ITracer <|.. Tracer
+interface ITracer {
+    isAlive()
+    onStartTrace()
+    onCloseTrace()
+}
+IAppForeground <|-- ITracer
+interface IAppForeground {
+    onForeground(boolean isForeground)
+}
+LooperObserver <|-- Tracer
+abstract class LooperObserver {
+    dispatchBegin()
+    doFrame()
+    dispatchEnd()
+    isDispatchBegin()
+}
+TraceConfig <-- FrameTracer
+IDoFrameListener <-- FrameTracer
+/'可以每帧都向上同步，也可以收集一定阈值范围再统一上报'/
+class IDoFrameListener {
+    doFrameSync()
+    doFrameAsync()
+    doReplay()
+    getIntervalFrameReplay() /'收集帧数，达到阈值开始上报'/
+    collect() /'每帧数据收集'/
+}
+FrameReplay <-- IDoFrameListener
+class FrameReplay {
+    focusedActivity
+    startNs
+    endNs
+    dropFrame
+    isVsyncFrame
+    intendedFrameTimeNs
+    inputCostNs
+    animationCostNs
+    traversalCostNs
+}
+FPSCollector <.. FrameTracer
+class FPSCollector {
+
+}
+IDoFrameListener <|-- FPSCollector
+FrameCollectItem <-- FPSCollector
+class FrameCollectItem {
+    visibleScene
+    sumFrameCost
+    sumFrame
+    sumDroppedFrames
+    dropLevel
+    dropSum
+}
+DropStatus <-- FrameCollectItem
+enum DropStatus {
+    DROPPED_FROZEN(4), 
+    DROPPED_HIGH(3), 
+    DROPPED_MIDDLE(2), 
+    DROPPED_NORMAL(1), 
+    DROPPED_BEST(0)
+}
+UIThreadMonitor <-- FrameTracer
+/'通过向Choreographer的queue增加callback实现了input、animation、traversal耗时的监控'/
+class UIThreadMonitor {
+    dispatchBegin()
+    dispatchEnd()
+    addObserver()
+    removeObserver()
+}
+Choreographer <-- UIThreadMonitor
+LooperMonitor <.. UIThreadMonitor
+/'依赖主线程 Looper，dispatchMessage之前和之后作为一帧监控开始和结束'/
+class LooperMonitor {
+    addListener()
+    removeListener()
+    dispatch(boolean isBegin, String log)
+}
+MessageQueue.IdleHandler <|.. LooperMonitor
+/'IdleHandler引入用来重置Printer，没理解用意？'/
+interface MessageQueue.IdleHandler {
+    boolean queueIdle()
+}
+LooperDispatchListener <-- LooperMonitor
+abstract class LooperDispatchListener {
+    onDispatchStart()
+    onDispatchEnd()
+}
+LooperPrinter <-- LooperMonitor
+Printer <|.. LooperPrinter
+Looper <-- LooperMonitor
+LooperObserver <-- LooperMonitor
+
+@enduml

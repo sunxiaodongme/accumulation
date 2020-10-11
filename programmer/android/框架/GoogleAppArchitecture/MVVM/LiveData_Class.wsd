@@ -1,0 +1,76 @@
+@startuml LiveData_Class
+
+/'是一个可以观察lifecycle的数据holder'/
+abstract class LiveData<T> {
+    SafeIterableMap<Observer, ObserverWrapper> mObservers
+    int mActiveCount
+    int mVersion
+
+    observe(LifecycleOwner owner, Observer observer) /'在LifecycleOwner激活状态通知数据'/
+    observeForever(Observer observer) /'只要LiveData不再被引用，就不会造成泄漏'/
+
+    removeObserver(Observer observer)
+    removeObservers(LifecycleOwner owner)
+
+    postValue(T value)
+    setValue(T value)
+
+    onActive()
+    onInactive()
+
+    boolean hasObservers()
+    boolean hasActiveObservers()
+}
+
+LifecycleBoundObserver <.. LiveData
+class LifecycleBoundObserver {
+
+}
+LifecycleOwner <-- LifecycleBoundObserver
+ObserverWrapper <|-- LifecycleBoundObserver
+abstract class ObserverWrapper {
+    boolean mActive
+    int mLastVersion
+    boolean shouldBeActive()
+    activeStateChanged(boolean newActive)
+    detachObserver()
+    boolean isAttachedTo(LifecycleOwner owner)
+}
+Observer <-- ObserverWrapper
+
+LifecycleEventObserver <|.. LifecycleBoundObserver
+interface LifecycleEventObserver {
+    onStateChanged(LifecycleOwner source, Lifecycle.Event event)
+}
+LifecycleObserver <|.. LifecycleEventObserver
+
+AlwaysActiveObserver <.. LiveData
+ObserverWrapper <|-- AlwaysActiveObserver
+
+LiveData <|-- MutableLiveData
+/'暴露public的setValue和postValue方法'/
+class MutableLiveData {
+    postValue(T value)
+    setValue(T value)
+}
+
+MutableLiveData <|-- MediatorLiveData
+/'观察其他LiveData，触发OnChanged事件'/
+class MediatorLiveData {
+    SafeIterableMap<LiveData, Source> mSources
+
+    addSource(LiveData source, Observer onChanged)
+    removeSource(LiveData toRemote)
+}
+Source <.. MediatorLiveData
+class Source {
+    LiveData mLiveData
+    Observer mObserver
+    int mVersion
+
+    plug() /'mLiveData.observeForever'/
+    unplug() /'mLiveData.removeObserver'/
+}
+Observer <|.. Source
+
+@enduml

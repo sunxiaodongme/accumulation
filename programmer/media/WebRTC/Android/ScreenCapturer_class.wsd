@@ -1,0 +1,53 @@
+@startuml ScreenCapturer_class
+
+/'捕获屏幕内容为视频流'/
+class ScreenCapturerAndroid {
+
+}
+VideoSink <|.. ScreenCapturerAndroid
+VideoCapturer <|.. ScreenCapturerAndroid
+interface VideoCapturer {
+    initialize()
+    startCapture()
+    stopCapture()
+    changeCaptureFormat()
+}
+
+VirtualDisplay <-- ScreenCapturerAndroid
+/'表示一个虚拟的展示，虚拟展示的内容会被渲染到Surface上'/
+class VirtualDisplay {
+
+} 
+Display <-- VirtualDisplay
+Surface <-- VirtualDisplay
+SurfaceTextureHelper <-- ScreenCapturerAndroid
+/'用SurfaceTexture创建WebRTC VideoFrame'/
+class SurfaceTextureHelper {
+    startListening(VideoSink listener)
+}
+EglBase <-- SurfaceTextureHelper
+SurfaceTexture <-- SurfaceTextureHelper
+/'从图片流中捕获帧作为OpenGL ES纹理'/
+class SurfaceTexture {
+    setOnFrameAvailableListener() /'一个新的图片帧变得有效时回调'/
+}
+YuvConverter <-- SurfaceTextureHelper
+MediaProjection <-- ScreenCapturerAndroid
+/'提供捕获屏幕或录制视频流的能力'/
+class MediaProjection {
+
+}
+MediaProjectionManager <-- ScreenCapturerAndroid
+/'管理MediaProjection的类型'/
+class MediaProjectionManager {
+    MediaProjection getMediaProjection()
+}
+CapturerObserver <-- ScreenCapturerAndroid
+/'捕获回调通知'/
+interface CapturerObserver {
+  onCapturerStarted(boolean success)
+  onCapturerStopped()
+  onFrameCaptured(VideoFrame frame)
+}
+
+@enduml

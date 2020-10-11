@@ -1,0 +1,32 @@
+@startuml Gson_FromJson_Seq
+
+Gson -> Gson : fromJson(String json, Type typeOfT)
+Gson -> Gson : fromJson(Reader json, Type typeOfT)
+Gson -> Gson : fromJson(JsonReader reader, Type typeOfT)
+Gson -> TypeToken : get(Type type)
+Gson -> Gson : getAdapter(TypeToken<T> type)
+Gson -> Gson : typeTokenCache.get
+
+==数据Bean解析TypeAdapter实例化过程==
+
+Gson -> ReflectiveTypeAdapterFactory : create
+ReflectiveTypeAdapterFactory -> ConstructorConstructor : get
+ReflectiveTypeAdapterFactory -> ReflectiveTypeAdapterFactory : getBoundFields
+ReflectiveTypeAdapterFactory -> Excluder : excludeClass|excludeField
+ReflectiveTypeAdapterFactory -> "$Gson$Types" : resolve，field type
+ReflectiveTypeAdapterFactory -> ReflectiveTypeAdapterFactory : getFieldNames \nhandle SerializedName
+ReflectiveTypeAdapterFactory -> FieldNamingPolicy.IDENTITY : translateName
+ReflectiveTypeAdapterFactory -> ReflectiveTypeAdapterFactory : createBoundField
+alt 字段使用TypeAdapter注解
+    ReflectiveTypeAdapterFactory -> JsonAdapterAnnotationTypeAdapterFactory : getTypeAdapter
+else
+    ReflectiveTypeAdapterFactory -> Gson : getAdapter \nrecursive parse
+end
+
+==json数据解析成bean过程==
+
+Gson -> ReflectiveTypeAdapterFactory.Adapter : read(JsonReader in)
+ReflectiveTypeAdapterFactory.Adapter -> ObjectConstructor : construct
+ReflectiveTypeAdapterFactory.Adapter -> ReflectiveTypeAdapterFactory.BoundField : read
+
+@enduml
