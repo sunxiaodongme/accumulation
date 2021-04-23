@@ -1,0 +1,29 @@
+@startuml gson_class_simple
+
+class Gson {
+
+}
+TypeAdapterFactory <-- Gson
+interface TypeAdapterFactory {
+    
+}
+TypeAdapter <-- TypeAdapterFactory
+abstract class TypeAdapter<T> {
+    write(JsonWriter out, T value)
+    T read(JsonReader in)
+}
+JsonWriter <.. TypeAdapter
+JsonReader <.. TypeAdapter
+TypeToken <.. TypeAdapterFactory
+/'表示泛型类型T'/
+class TypeToken<T> {
+    Class<? super T> rawType
+    Type type
+}
+$Gson$Type <.. TypeToken
+/'类型处理工具类'/
+class $Gson$Type {
+
+}
+
+@enduml

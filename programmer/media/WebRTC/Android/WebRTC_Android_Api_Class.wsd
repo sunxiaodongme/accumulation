@@ -34,4 +34,40 @@ class MediaStreamTrack {
 
 }
 
+JavaAudioDeviceModule <-- PeerConnectionFactory
+/'音频设备模块'/
+class JavaAudioDeviceModule {
+
+}
+AudioDeviceModule <|.. JavaAudioDeviceModule
+interface AudioDeviceModule {
+    void release()
+    void setSpeakerMute(boolean mute)
+    void setMicrophoneMute(boolean mute)
+}
+AudioManager <-- JavaAudioDeviceModule
+/'音量和响铃模式的控制'/
+class AudioManager {
+
+}
+WebRtcAudioRecord <-- JavaAudioDeviceModule
+/'音频录制（输入）'/
+class WebRtcAudioRecord {
+
+}
+/'音频播放（输出）'/
+WebRtcAudioTrack <-- JavaAudioDeviceModule
+AudioEncoderFactoryFactory <-- PeerConnectionFactory
+/'音频编码器'/
+interface AudioEncoderFactoryFactory {
+
+}
+AudioEncoderFactoryFactory <|.. BuiltinAudioEncoderFactoryFactory
+AudioDecoderFactoryFactory <-- PeerConnectionFactory
+/'音频解码器'/
+interface AudioDecoderFactoryFactory {
+
+}
+AudioDecoderFactoryFactory <|.. BuiltinAudioDecoderFactoryFactory
+
 @enduml

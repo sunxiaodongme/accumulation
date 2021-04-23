@@ -1,6 +1,6 @@
 @startuml apprtcmobile_seq
 
-==初始化创建PeerConnectionFactory==
+==初始化创建RTCClient==
 
 CallActivity -> AppRTCClient : constructor
 

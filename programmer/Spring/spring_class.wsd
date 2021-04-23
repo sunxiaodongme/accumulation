@@ -1,0 +1,20 @@
+@startuml spring_class
+
+class AnnotationConfigApplicationContext {
+
+}
+GenericApplicationContext <|-- AnnotationConfigApplicationContext
+AnnotationConfigRegistry <|.. AnnotationConfigApplicationContext
+AnnotatedBeanDefinitionReader <-- AnnotationConfigApplicationContext
+ClassPathBeanDefinitionScanner <-- AnnotationConfigApplicationContext
+
+class EnvironmentPostProcessor {
+
+}
+ConfigurableEnvironment <.. EnvironmentPostProcessor
+Environment <|.. ConfigurableEnvironment
+ConfigurablePropertyResolver <|.. ConfigurableEnvironment
+PropertyResolver <|.. Environment
+PropertyResolver <|.. ConfigurablePropertyResolver
+
+@enduml

@@ -1,0 +1,42 @@
+@startuml lint_uast_class
+
+/'表示所有uast元素'/
+interface UElement {
+
+}
+PsiElement <- UElement
+/'表示所有注解元素'/
+interface UAnnotated {
+
+} 
+UElement <|.. UAnnotated
+/'表示表达式或语句'/
+interface UExpression {
+    fun evaluate() /'表达式求值'/
+    fun getExpressionType()
+}
+UElement <|.. UExpression
+UAnnotated <|.. UExpression
+PsiType <- UExpression
+/'表示一个标签'/
+interface ULabeled {
+
+}
+UElement <|.. ULabeled
+/'表示声明类型'/
+interface UDeclaration {
+
+}
+UElement <|.. UDeclaration
+UAnnotated <|.. UDeclaration
+/'表示类'/
+interface UClass {
+
+}
+UDeclaration <|.. UClass
+PsiClass <|.. UClass
+interface PsiClass {
+
+}
+
+@enduml

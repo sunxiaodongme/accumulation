@@ -1,0 +1,44 @@
+@startuml svga_class
+
+/'svga动效文件解析器'/
+class SVGAParser {
+    fun decodeFromAssets()
+    fun decodeFromURL()
+}
+SVGACache <-- SVGAParser
+SVGAVideoEntity <-- SVGAParser
+/'svga动效展示视图'/
+class SVGAImageView {
+
+}
+ValueAnimator <-- SVGAImageView
+SVGADrawable <-- SVGAImageView
+class SVGADrawable {
+    var currentFrame = 0
+}
+Drawable <|-- SVGADrawable
+SVGACanvasDrawer <-- SVGADrawable
+/'Drawable canvas绘制器'/
+class SVGACanvasDrawer {
+
+}
+SVGADynamicEntity <-- SVGACanvasDrawer
+/'动效展示动态设置实体，例如：增加特定头像'/
+class SVGADynamicEntity {
+
+}
+SGVADrawer <|-- SVGACanvasDrawer
+class SGVADrawer {
+    drawFrame(canvas : Canvas, frameIndex: Int, scaleType: ImageView.ScaleType)
+}
+SVGAVideoEntity <-- SGVADrawer
+/'svga文件解析生成的动效实体'/
+class SVGAVideoEntity {
+
+}
+MovieEntity <-- SVGAVideoEntity
+SVGAVideoSpriteEntity <-- SVGAVideoEntity
+SVGAAudioEntity <-- SVGAVideoEntity
+SVGAScaleInfo <-- SGVADrawer
+
+@enduml

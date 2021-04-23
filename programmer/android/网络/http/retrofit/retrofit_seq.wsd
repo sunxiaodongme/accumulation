@@ -1,0 +1,70 @@
+@startuml retrofit_seq
+
+==创建接口代理==
+
+Retrofit -> Retrofit : create
+Retrofit -> Proxy : newProxyInstance
+
+==创建ServiceMethod实例==
+
+Proxy -> Retrofit : loadServiceMethod
+Retrofit -> ServiceMethod : parseAnnotations
+
+==解析方法&参数注解==
+
+ServiceMethod -> RequestFactory : parseAnnotations
+RequestFactory -> RequestFactory.Builder : build
+RequestFactory.Builder -> RequestFactory.Builder : parseMethodAnnotation
+RequestFactory.Builder -> RequestFactory.Builder : parseParameter
+RequestFactory.Builder -> ParameterHandler : constructor
+ServiceMethod -> HttpServiceMethod : parseAnnotations
+
+==创建CallAdapter==
+
+HttpServiceMethod -> HttpServiceMethod : createCallAdapter
+HttpServiceMethod -> Retrofit : callAdapter
+
+==创建Converter==
+
+HttpServiceMethod -> HttpServiceMethod : createResponseConverter
+HttpServiceMethod -> Retrofit : responseBodyConverter
+
+==创建HttpServiceMethod==
+
+alt !isKotlinSuspendFunction
+    HttpServiceMethod -> CallAdapted : constructor
+else continuationWantsResponse
+    HttpServiceMethod -> SuspendForResponse : constructor
+else    
+    HttpServiceMethod -> SuspendForBody : constructor
+end
+
+==触发OkHttpCall==
+
+Proxy -> HttpServiceMethod : invoke
+HttpServiceMethod -> OkHttpCall : constructor
+
+alt !isKotlinSuspendFunction
+    HttpServiceMethod -> CallAdapted : adapt
+
+==触发CallAdapter==
+
+    CallAdapted -> DefaultCallAdapterFactory.CallAdapter : adapt
+    DefaultCallAdapterFactory.CallAdapter -> ExecutorCallbackCall : constructor
+    Client -> ExecutorCallbackCall : enqueue
+    ExecutorCallbackCall -> OkHttpCall : enqueue
+
+==触发ParameterHandler==
+
+    OkHttpCall -> OkHttpCall : createRawCall()
+    OkHttpCall -> RequestFactory : create
+    RequestFactory -> ParameterHandler : apply
+
+==触发Converter==
+    
+    OkHttpCall -> OkHttpCall : parseResponse
+    OkHttpCall -> Converter : convert
+
+end
+
+@enduml
