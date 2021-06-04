@@ -1,0 +1,41 @@
+@startuml effect_class
+
+class Effect {
+
+}
+IEffectConfig <-- Effect
+IEffect <|.. Effect
+interface IEffect {
+    play()
+    pause()
+    stop()
+}
+IPlayer <|.. Effect
+interface IPlayer {
+    play(view: IEffectView)
+    pause(view: IEffectView)
+    stop(view: IEffectView)
+}
+class EffectView {
+    entityPriorityQueue: TreeMap<String, IEffectEntity>
+    add(entity: IEffectEntity)
+}
+IPlayer <-- EffectView
+FrameLayout <|-- EffectView
+IEffectView <|.. EffectView
+interface IEffectView {
+    play(entity: IEffectEntity? = null, l: IPlayListener? = null)
+    pause()
+    stop()
+}
+IEffectEntity <-- EffectView
+abstract class IEffectEntity {
+    priority: String
+    path: String
+    effectViewClazz: String
+}
+IEffectEntity <|-- SVGAEffectEntity
+IEffectView <|.. SVGAEffectView
+SVGAImageView <|-- SVGAEffectView
+
+@enduml

@@ -1,0 +1,43 @@
+@startuml WETools_class
+
+class BIToolImpl {
+
+}
+IBITool <|.. BIToolImpl
+BITMenuConfig <.. IBITool
+/'菜单项配置'/
+class BITMenuConfig {
+
+}
+BITSubMenuInfo <-- BITMenuConfig
+/'子菜单'/
+class BITSubMenuInfo {
+
+}
+BIToolHelper <-- BIToolImpl
+/'菜单工具类'/
+class BIToolHelper {
+    
+}
+BITMenu <-- BIToolHelper
+/'菜单布局实现'/
+class BITMenu {
+
+}
+LinearLayout <|-- BITMenu
+BITCore <-- BIToolHelper
+class BITCore {
+
+}
+IAttrs <|.. BITCore
+interface IAttrs {
+    List<BITAttrItem> getAttrs(Element element)
+}
+Element <.. IAttrs
+BITAttrItem <.. IAttrs
+IAttrs <|.. BITTextView
+IAttrs <|.. BITImageView
+IAttrs <|.. BITConverter
+OnMenuStateChangedListener <.. BIToolImpl
+
+@enduml
