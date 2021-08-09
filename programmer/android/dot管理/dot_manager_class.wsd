@@ -1,0 +1,41 @@
+@startuml dot_manager_class
+
+class BadgeNodeManager {
+    badgeTreeCache: MapOf<String, BadgeNode>()
+    buildBadgeTree(configs: Array<Config>): BadgeNode? /'根据配置生成红点管理Tree'/
+    getBadgeNode(path: String): BadgeNode
+    getNodeLiveData(path: String): MutableLiveData<DotEntry>
+}
+Config <-- BadgeNodeManager
+class Config {
+    path: String
+}
+IBadgeOp <-- Config
+BadgeNode <-- BadgeNodeManager
+class BadgeNode {
+    path: String
+    parent: BadgeNode
+    children: MutableMap<String, BadgeNode>
+    dotData: MutableLiveData<DotEntry>() /'当前红点数据'/
+    update()
+}
+IBadgeOp <|.. BadgeNode
+/'提供红点展示逻辑之外的操作封装'/
+interface IBadgeOp {
+    show()
+    hide()
+    getDotEntry(): DotEntry
+    getType()
+}
+DotEntry <-- IBadgeOp
+/'红点数据实体'/
+class DotEntry {
+
+}
+DotEntryType <-- DotEntry
+/'红点展示类型：TYPE_NUM, TYPE_DOT, TYPE_TEXT'/
+class DotEntryType {
+
+}
+
+@enduml

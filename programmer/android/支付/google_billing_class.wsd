@@ -1,0 +1,38 @@
+@startuml google_billing_class
+
+客户端 --> 客户端 : 初始化 BillingClient\n设置PurchasesUpdatedListener
+客户端 --> "Google Play" : 与 Google Play 建立连接\nstartConnection
+alt 连接成功
+    客户端 --> 业务后台 : 获取可供展示的SKU列表
+    业务后台 --> 客户端 : 返回可供展示的SKU列表
+    客户端 --> "Google Play" : 查询SKU详情
+    "Google Play" --> 客户端 : 返回SKU详情
+    客户端 --> 用户 : 展示SKU
+    用户 --> 客户端 : 选择SKU购买
+    客户端 --> 业务后台 : 创建订单
+    业务后台 --> 客户端 : 创建成功（orderId, obfuscatedAccountID, obfuscatedProfileId）
+    客户端 --> "Google Play" : 启动购买流程\nlaunchBillingFlow
+    "Google Play" --> 用户 : 展示支付弹窗
+    用户 --> "Google Play" : 完成支付
+    "Google Play" --> 客户端 : 回调支付状态\nonPurchasesUpdated
+    alt 支付状态回调失败
+        客户端 --> "Google Play" : BillingClient.queryPurchasesAsync查询购买交易
+    end
+    客户端 --> "Google Play" : getPurchaseState获取购买交易的状态\n只有在状态为 PURCHASED 时才能发放购买内容\n当购买状态从“PENDING”转换为“PURCHASED”时，3天的确认期限才会开始
+    客户端 --> 业务后台 : 验证购买交易\n将相应的 purchaseToken 发送到后端
+    业务后台 --> 业务后台 : 验证当前购买交易的 purchaseToken 值是否与以前的任何 purchaseToken 值都不匹配
+    业务后台 --> GP后台 : Purchases.products:get向 Google 验证购买交易是否合法
+    GP后台 --> 业务后台 : 返回验证结果
+    alt 购买交易合法且过去没有使用过
+        业务后台 --> 用户 : 发放购买内容
+        业务后台 --> 客户端 : 验证购买交易成功
+        客户端 --> "Google Play" : 确认购买交易\nconsumeAsync\n如果您在三天内未确认购买交易，用户会自动收到退款，并且 Google Play 会撤消该购买交易
+        客户端 --> 业务后台 : 查询是否已确认完成购买交易
+        业务后台 --> 客户端 : 返回未确认完成
+        客户端 --> "Google Play" : 确认购买交易\nconsumeAsync
+    else 
+        业务后台 --> 客户端 : 验证购买交易失败
+    end
+end
+
+@enduml

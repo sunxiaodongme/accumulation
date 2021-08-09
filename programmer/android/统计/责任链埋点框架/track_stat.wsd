@@ -1,0 +1,39 @@
+@startuml track_stat
+
+class CommonAction {
+    trackView(view: View): CommonAction
+    send()
+}
+View <-- CommonAction
+class View {
+    trackNode: ITrackNode?
+    collectTrackParams(): TrackParams
+}
+ITrackNode <-- View
+interface ITrackNode {
+    referrerTrackNode(): ITrackNode?
+    fillTrackParams(trackParams: TrackParams)
+}
+TrackParams <-- ITrackNode
+class TrackParams {
+
+}
+Map <|-- TrackParams
+ITrackNode <|.. IPageTrackNode
+interface IPageTrackNode {
+    referrerKeyMap(map: MutableMap<String, String>)
+}
+class Intent {
+    referrerTrackNode: ITrackNode?
+}
+ITrackNode <-- Intent
+class IntentRequest {
+    referrerTrackNode(node: ITrackNode): IntentRequest
+}
+ITrackNode <-- IntentRequest
+class BaseActivity {
+
+}
+IPageTrackNode <|.. BaseActivity
+
+@enduml
