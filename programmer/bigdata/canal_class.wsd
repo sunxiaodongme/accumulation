@@ -1,0 +1,77 @@
+@startuml canal_class
+
+class Entry {
+
+}
+GeneratedMessage <|-- Entry
+/'protobuf message'/
+class GeneratedMessage {
+    ByteString getStoreValue()
+}
+ByteString <-- GeneratedMessage
+/'protobuf byte string'/
+class ByteString {
+
+}
+EntryType <-- Entry
+enum EntryType {
+    TRANSACTIONBEGIN,
+    ROWDATA,
+    TRANSACTIONEND,
+    HEARTBEAT,
+    GTIDLOG
+}
+ProtocolMessageEnum <|.. EntryType
+/'protobuf message enum'/
+class ProtocolMessageEnum {
+
+}
+EventType <-- Entry
+class EventType {
+    INSERT,
+    UPDATE,
+    DELETE,
+    CREATE,
+    ALTER,
+    ERASE,
+    QUERY,
+    TRUNCATE,
+    RENAME,
+    CINDEX,
+    DINDEX,
+    GTID,
+    XACOMMIT,
+    XAROLLBACK,
+    MHEARTBEAT
+}
+ProtocolMessageEnum <|.. EventType
+
+Header <-- Entry
+/'协议头部信息'/
+class Header {
+    String getLogfileName() /'binlog/redolog 文件名'/
+    long getLogfileOffset() /'binlog/redolog 文件的偏移位置'/
+    String getSchemaName() /'变更数据的schemaname'/
+    String getTableName() /'变更数据的tablename'/
+}
+
+/'每行变更数据的数据结构'/
+class RowChange {
+    parseFrom(ByteString data)
+    List<RowData> getRowDatasList() /'一次数据库变更可能存在多行'/
+}
+GeneratedMessage <|-- RowChange
+RowData <-- RowChange
+class RowData {
+    List<Column> getBeforeColumnsList() /'增量数据(修改前,删除前)'/
+    List<Column> getAfterColumnsList() /'增量数据(修改后,新增后)'/
+}
+Column <-- RowData
+/'每个字段'/
+class Column {
+    String getName() /'字段名称(忽略大小写)，在mysql中是没有的'/
+    String getValue() /'字段值,timestamp,Datetime是一个时间格式的文本'/
+    boolean getUpdated() /'如果EventType=UPDATE,用于标识这个字段值是否有修改'/
+}
+
+@enduml
