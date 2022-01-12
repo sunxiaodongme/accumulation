@@ -1,0 +1,117 @@
+@startuml VDAnimation_class
+
+===自实现时间函数和动效配置，以完成动效整体监控===
+
+/'串行动效'/
+class Sequential {
+    animations: [VDAnimationProtocol]
+}
+
+VDAnimationProtocol <|.. Sequential
+
+/'根据动效参数返回动效执行代理'/
+interface VDAnimationProtocol {
+    func delegate(with options: AnimationOptions) -> AnimationDelegateProtocol
+    func start(_ completion: @escaping (Bool) -> Void) -> AnimationDelegateProtocol /'启动动效，可以监听完成回调，其中调用了delegate'/
+
+    /'动效控制'/
+    func duration(_ value: TimeInterval) -> VDAnimationProtocol
+    func duration<F: BinaryFloatingPoint>(relative value: F) -> VDAnimationProtocol
+    func curve(_ value: BezierCurve) -> VDAnimationProtocol
+    func `repeat`(_ count: Int) -> VDAnimationProtocol
+    func autoreverse() -> VDAnimationProtocol
+    func reversed() -> VDAnimationProtocol
+    func delay<F: BinaryFloatingPoint>(_ value: F) -> VDAnimationProtocol
+
+    /'SwiftUI'/
+    func store(_ store: AnimationsStore) -> AnimateWithStore
+}
+
+AnimationOptions <.. VDAnimationProtocol
+
+AnimationDelegateProtocol <.. VDAnimationProtocol
+
+/'获取动效状态和进行动效播放控制'/
+interface AnimationDelegateProtocol {
+	isRunning: Bool
+	var position: AnimationPosition { get nonmutating set }
+	var options: AnimationOptions { get }
+	isInstant: Bool
+	
+	func play(with options: AnimationOptions) /'开始执行动效'/
+	func pause()
+	func stop(at position: AnimationPosition?)
+	func add(completion: @escaping (Bool) -> Void) /'单个动效完成回调completion，然后又动效集合统一汇总整体完成情况'/
+}
+
+SequentialDelegate <.. Sequential
+class SequentialDelegate {
+
+}
+AnimationDelegateProtocol <|.. SequentialDelegate
+/'用于Duration时长的计算'/
+AnimationDuration <-- SequentialDelegate
+RelationValue <|-- AnimationDuration
+class RelationValue<TimeInterval> {
+
+}
+
+AnimationOptions <-- SequentialDelegate
+class AnimationOptions {
+    duration: AnimationDuration?
+	curve: BezierCurve?
+	complete: Bool?
+	isReversed: Bool?
+}
+ExpressibleByArrayLiteral <|.. AnimationOptions
+Equatable <|.. AnimationOptions
+AnimationDuration <-- AnimationOptions
+
+BezierCurve <-- AnimationOptions
+/'贝塞尔曲线'/
+class BezierCurve {
+    linear = BezierCurve(.zero, .one)
+    ease = BezierCurve(CGPoint(x: 0.25, y: 0.1), CGPoint(x: 0.25, y: 1))
+    easeIn = BezierCurve(CGPoint(x: 0.42, y: 0), .one)
+    easeOut = BezierCurve(.zero, CGPoint(x: 0.58, y: 1))
+    easeInOut = BezierCurve(easeIn.point1, easeOut.point2)
+}
+
+AnimationPosition <.. SequentialDelegate
+/'表示动效进度'/
+enum AnimationPosition {
+    case start, progress(Double), end
+}
+ExpressibleByFloatLiteral <|.. AnimationPosition
+Equatable <|.. AnimationPosition
+
+
+/'SwiftUI动效'/
+class Animate {
+
+}
+VDAnimationProtocol <|.. Animate
+
+StateChanges <|.. Animate
+/'Binding状态改变包装器'/
+class StateChanges {
+    change: (Double) -> Void
+}
+
+AnimationsStore <-- Animate
+/'SwiftUI动效控制器'/
+class AnimationsStore {
+
+}
+
+AnimationDelegateProtocol <|.. AnimationsStore
+ObservableObject <|.. AnimationsStore
+
+/'拓展View，增加进度监听'/
+interface View {
+    func with(_ store: AnimationsStore) -> some View
+}
+
+AnimationsStore <.. View
+
+@enduml
