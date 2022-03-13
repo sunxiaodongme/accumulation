@@ -1,0 +1,20 @@
+@startuml device_id_seq
+
+Android -> Android : 应用启动
+Android -> Server : updateDeviceId(deviceId, oldDeviceId, adid, andoridId, mac, normalDeviceInfo, advancedDeviceInfo, platform: android)
+IOS -> IOS : 应用启动
+IOS -> Server : updateDeviceId(deviceId, oldDeviceId, uuid, idfv, idfa, platform: ios)
+alt 请求存在deviceId
+    Server -> Server : 更新deviceId相关设备信息
+else 请求不存在deviceId
+    alt 未创建deviceId
+        Server -> Server : 创建deviceId
+        Server -> Server : 记录new deviceId和oldDeviceId映射
+    end
+end
+Server -> Android : 返回deviceId
+Android -> Server : 与设备相关功能协议带上deviceId，新版本扩展使用新device id字段，服务端根据判断映射old device id兼容旧逻辑
+Server -> IOS : 返回deviceId
+IOS -> Server : 与设备相关功能协议带上deviceId
+
+@enduml
