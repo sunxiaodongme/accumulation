@@ -1,0 +1,25 @@
+@startuml SwiftTUI
+
+==布局树构建过程==
+
+Application -> Node : build
+Node -> Composed_VStack : buildNode
+Composed_VStack -> VStack : setupStateProperties /'反射View中的所有state属性建立valueReference关联'/
+Composed_VStack -> VStack : setupEnvironmentProperties /'反射View中的所有Environment属性建立valueReference关联'/
+Composed_VStack -> Node : addNode /'增加view.body.nodeBuilder的Node，设置children节点'/
+alt LayoutRoot
+    Node -> VStack : loadData
+end
+
+==布局更新构建过程==
+
+State -> State : set
+State -> Application : invalidateNode
+Application -> Application : scheduleUpdate
+Application -> Application : update
+Application -> Node : update
+Node -> NodeBuilder : updateNode
+NodeBuilder -> Control.Layer : invalidate
+Application -> Renderer : update
+
+@enduml

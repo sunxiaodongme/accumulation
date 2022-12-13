@@ -1,0 +1,132 @@
+@startuml SwiftTUI
+
+class Application {
+    invalidatedNodes: [Node]
+    invalidateNode(_ node: Node)
+    scheduleUpdate()
+    update() /'触发无效节点比较&重绘'/
+}
+
+Node <-- Application
+Window <-- Application
+Control <-- Application
+Renderer <-- Application
+
+/'The node of a view graph'/
+class Node {
+    parent: Node?
+    children: [Node]
+    state: [String: Any]
+    size: Int /'Node中的Control的数量'/
+}
+NodeBuilder <-- Node
+interface NodeBuilder {
+    buildNode(_ node: Node)
+    updateNode(_ node: Node)
+    size: Int?
+}
+Control <-- Node
+/'The basic layout object that can be created by a node'/
+class Control implements LayerDrawing {
+    parent: Control?
+    children: [Control]
+    layer: Layer
+    addSubview(_ view: Control, at index: Int)
+    removeSubview(at index: Int)
+    size(proposedSize: Size) -> Size
+    layout(size: Size)
+}
+Layer <-- Control
+class Layer {
+    parent: Layer?
+    children: [Layer]
+    invalidate(rect: Rect) /'触发重绘更新'/
+}
+Renderer <-- Layer
+/'应用程序窗口'/
+class Window implements LayerDrawing {
+    layer: Layer
+    controls: [Control]
+    firstResponder: Control?
+    addControl(_ control: Control)
+}
+
+interface LayerDrawing {
+    cell(at position: Position) -> Cell?
+}
+Position <.. LayerDrawing
+/'绘制位置'/
+class Position {
+    column: Int
+    line: Int
+}
+Cell <.. LayerDrawing
+/'绘制单元'/
+class Cell {
+    char: Character
+    foregroundColor: Color
+    backgroundColor: Color?
+    inverted: Bool
+}
+/'图形渲染'/
+class Renderer {
+    cache: [[Cell?]]
+    update() /'只更新脏区绘制'/
+    draw(rect: Rect?)
+    drawPixel(_ cell: Cell, at position: Position)
+}
+Rect <.. Renderer
+class Rect {
+    position: Position
+    size: Size
+}
+class Size {
+    width: Int
+    height: Int
+}
+Position <-- Rect
+Size <-- Rect
+
+interface AnyState {
+
+}
+/'状态变更触发node无效'/
+class State<T> implements AnyState {
+    valueReference: StateReference
+}
+StateReference <-- State
+class StateReference {
+    node: Node?
+    label: String?
+}
+Node <-- StateReference
+
+interface Primitive extends NodeBuilder {
+
+}
+interface View {
+
+}
+class Text implements View, Primitive {
+    text: String
+}
+/'环境变量，向parent遍历值的方式获取值'/
+class Environment<T> implements AnyEnvironment {
+    keyPath: KeyPath<EnvironmentValues, T>
+}
+interface AnyEnvironment {
+
+}
+EnvironmentReference <-- AnyEnvironment
+class EnvironmentReference {
+    node: Node?
+}
+EnvironmentValues <.. Environment
+class EnvironmentValues {
+    values: [ObjectIdentifier: Any]
+    subscript<K: EnvironmentKey>(key: K.Type) -> K.Value
+}
+EnvironmentKey <.. EnvironmentValues
+Node <-- EnvironmentReference
+
+@enduml
