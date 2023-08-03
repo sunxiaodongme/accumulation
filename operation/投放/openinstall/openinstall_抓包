@@ -1,0 +1,198 @@
+4:45:53:421
+https://web1.openinstall.io/web/3rqhu6/_/init?av=1&cv=0&hash=&sw=paGj&sh=rqek&sp=3
+
+Host: web1.openinstall.io
+Content-Type: text/plain;charset=utf-8
+Origin: https://app-3rqhu6.openinstall.io
+Accept-Encoding: gzip, deflate, br
+Cookie: v-app-3rqhu6=1; op-mid=12534656221187
+Connection: keep-alive
+Accept: */*
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.30(0x18001e32) NetType/4G Language/zh_CN
+Referer: https://app-3rqhu6.openinstall.io/
+Content-Length: 23
+Accept-Language: zh-CN,zh-Hans;q=0.9
+
+{
+  "testKey" : "testValue"
+}
+
+Server: Tengine
+Content-Type: application/json;charset=utf-8
+Content-Length: 1012
+Connection: keep-alive
+Date: Sat, 17 Jun 2023 08:45:53 GMT
+Access-Control-Allow-Origin: https://app-3rqhu6.openinstall.io
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: op-mid=12534656221187; Max-Age=315360000; Expires=Tue, 14-Jun-2033 08:45:53 GMT; Path=/
+Set-Cookie: v-app-3rqhu6=1; Max-Age=315360000; Expires=Tue, 14-Jun-2033 08:45:53 GMT; Path=/web/3rqhu6/
+Via: kunlun4.cn4127[102,0]
+Timing-Allow-Origin: *
+EagleId: 7499481816869915534493251e
+
+{
+  "cpc" : "3120331433443034222",
+  "fu" : "https:\/\/3rqhu6.openinstall.io\/ulink\/c\/eyJkIjp7InRlc3RLZXkiOiJ0ZXN0VmFsdWUifSwibSI6InZ0TU9aWGtxT2JBQUFBR0l5SWhEXzhyWkVrRE01bzdUZWxsdmFIazlwZ1Nsa1hya0tsWlNRODZ6SnRNLU5MblpGanAzOXcifQ==",
+  "st" : 0,
+  "pye" : null,
+  "fm" : "loc",
+  "su" : null,
+  "fr" : false,
+  "channelCode" : null,
+  "pyp" : null,
+  "sh" : "<div id='openinstall_shadow' style='position:fixed;left:0;top:0;background:rgba(0,0,0,0.5);filter:alpha(opacity=50);width:100%;height:100%;z-index:10000;'><div style='text-align:right; margin-top:1%; margin-right:5%;'>< img style='width:70%; margin:0 auto;' src='https:\/\/res.cdn.openinstall.io\/api_res\/images\/android-brower-tip.png?sign=d48d963abb2b48e112cbff124558089b&t=64899b29'\/><\/div><\/div>",
+  "sm" : null,
+  "dsoi" : false,
+  "csu" : "https:\/\/web.openinstall.io\/web\/3rqhu6\/_\/clicked\/c\/eyJkIjp7InRlc3RLZXkiOiJ0ZXN0VmFsdWUifSwibSI6IkxGZHlhd1lJN3FvQUFBR0l5SWhFQUZPLWw2blNZcExMc0J2SW11emRIUlFteVJUekhKWnVlR0VMa1N5TUxEamJTYzBBYWcifQ==",
+  "ft" : 300,
+  "ph" : "qve2__Krsbv55vP4__jl4vf6-rvm9LunpKOloqCjoKSkp6euobuxqLD49OXmraq596g="
+}
+
+
+4:45:54:705
+https://web.openinstall.io/web/3rqhu6/_/clicked/c/eyJkIjp7InRlc3RLZXkiOiJ0ZXN0VmFsdWUifSwibSI6IkxGZHlhd1lJN3FvQUFBR0l5SWhFQUZPLWw2blNZcExMc0J2SW11emRIUlFteVJUekhKWnVlR0VMa1N5TUxEamJTYzBBYWcifQ==?p=1&ref=https%3A%2F%2Fapp-3rqhu6.openinstall.io%2Fjs-test%3FtestKey%3DtestValue&ac=0&cc=0
+
+Host: web.openinstall.io
+Origin: https://app-3rqhu6.openinstall.io
+Accept-Encoding: gzip, deflate, br
+Content-Length: 0
+Connection: keep-alive
+Accept: */*
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.30(0x18001e32) NetType/4G Language/zh_CN
+Accept-Language: zh-CN,zh-Hans;q=0.9
+Referer: https://app-3rqhu6.openinstall.io/
+Cache-Control: max-age=0
+
+Server: Tengine
+Content-Length: 0
+Connection: keep-alive
+Date: Sat, 17 Jun 2023 08:45:54 GMT
+Access-Control-Allow-Origin: https://app-3rqhu6.openinstall.io
+Vary: Origin
+Access-Control-Allow-Credentials: true
+Set-Cookie: c-app-3rqhu6=1; Max-Age=315360000; Expires=Tue, 14-Jun-2033 08:45:54 GMT; Path=/web/3rqhu6/
+Via: kunlun3.cn4127[35,0]
+Timing-Allow-Origin: *
+EagleId: 7499481716869915547317633e
+
+
+4:45:56:855
+https://3rqhu6.openinstall.io/ulink/c/eyJkIjp7InRlc3RLZXkiOiJ0ZXN0VmFsdWUifSwibSI6InZ0TU9aWGtxT2JBQUFBR0l5SWhEXzhyWkVrRE01bzdUZWxsdmFIazlwZ1Nsa1hya0tsWlNRODZ6SnRNLU5MblpGanAzOXcifQ==?p=1
+
+Host: 3rqhu6.openinstall.io
+Connection: keep-alive
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 16_1_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.30(0x18001e32) NetType/4G Language/zh_CN
+Accept-Language: zh-CN,zh-Hans;q=0.9
+Referer: https://app-3rqhu6.openinstall.io/
+Accept-Encoding: gzip, deflate, br
+
+302
+
+Date: Sat, 17 Jun 2023 08:45:56 GMT
+Content-Length: 0
+Connection: keep-alive
+Location: https://apps.apple.com/cn/app/openanalysis/id1484436743
+
+
+4:46:18:518
+https://api2.openinstall.io/api/v2_5/ios/3rqhu6/config
+
+Host: api2.openinstall.io
+Content-Type: application/x-www-form-urlencoded
+Connection: keep-alive
+Accept: */*
+User-Agent: Openinstall/8 CFNetwork/1399 Darwin/22.1.0
+Accept-Language: zh-CN,zh-Hans;q=0.9
+Content-Length: 2686
+Accept-Encoding: gzip, deflate, br
+
+jpaw=lQEqvMgz5Ql7jL3S328Arr3BMvYy&kjfe=zVgq64th&hwef=zUA29JU=&ntrh=lT5stcs1-l0y0Q==&fefb=zkAx9JA=&qmvzs=zVg87Jxp-lop2uCOjg==&efef=z1kx&efaa=xF82&fuqd=zVwz9JV--0Ev&fuqd=xlQ1&fuqd=mgs86p9q-g==&fuqd=zV4q65Jn5VsnzOmN&fuqd=zlo04p9o_1oo2LOJiDom8OOCaatyAL9M6JaBjsIgKmlHGhiD&fuqd=zlo04p9o_1oo2LOJiDom8OOCaft_DOVFuZrYiMwld2MUEUnUNn4=&fuqd=zlo04p9o_loo2LOJjzpwpbKBaal_W-9FvZjYjMx_ITcTER2DbHw=&fuqd=zlo04p9o_loo2LOJjzpwpbKBaa9_DOlF6ZyLicxxdjcVEU2HMA==&fuqd=mgs86p9q_VwohOqOijMh-7bQZ_txDOxJuQ==&fuqd=mgs86p9q_Qwp1-qJimYl-7bUNfxxA-RI7g==&fuqd=mgs86p9qqVd42-qOjGYl-7bUNq9xWe5P7A==&fuqd=mgs86p9qrQ54hOrYjGYl-7bUMqlxAr4e6w==&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIvAOVO6cuBjJQkKmlJG0-P&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIoAOVO6cuBjJQkKmlJG0-P&fuqd=mgs86p9q-lor0OrYj2N6--eDNqBxA78ZvQ==&fuqd=mgs86p9qqAom0-rZj2N5o7SDMKJ9A7k=&fuqd=mgs86p9qrlcq0-qIjjcg--iCZv1xDu9J&fuqd=mgs86p9q_lx_0uqJi2Fw--mCMqlxWO8avg==&fuqd=mgs86p9qrgkq0-qI2Dd3-7XQY6hxC79M7g==&fuqd=mgs86p9qrlcn1OrZhmRy--iFZK1xCeVIuA==&fuqd=zVc29JRm80EuzOI=&kltz=yh8wq_IapF1b27aNj3QRi6faGa16aagHg8zt2oN1XydBfjjVFg7dyLuR6xSlEkKwKYCxgKKtR-e2zvK1at9A24Uac5vIZfotQdC38o5XL_KSwRX0CVaIDev886aQFEMSJh5JhiUZwp-AnvYVrxYysQ-oio-N-2b56bW2j0HLIaePBTyL3wesG1vPpM3WRAur4eQM3Slv7xX23vOjgAhHPRNcNINlI7DRt7TsLKV5BIE7j7ygsrJ31fSpg40e-H6RkCF1g8IfuhxTieLj83cHo-jFYPENdJ4Tv_fkiZJ3XB05Sj3_Onb1-t2k8yu6FRmKCJ-kl_n2VPDr1biaRt5yuLYCdZboJ4M3J5Klz-lkEbeb-CmvLVGxCbnY15iGIiIFG1NE52Qd5OempOwGpA01riuqoZ6vpCbhyrmNiWHcb766AW2O_WadHFmR5dDnRTmziv0F6gljsC_o-dSnxRBlNztnCO9tIPLLh6_WNLQEGbAXoZj1gvp34NWXuKN4jUSxuCBetccWoR991-GNik0zpOLcK9Z7auo379jVu4AOWgpEWCnRNwzkxKiB2CSCCR-gEN-bpKKkLaXInLaPZ_1shJBbfuycOaM8L4y3-MYtNpbk0yHaDVSPMuyd9ayGdEA4KGAw8wYC4fq43sYzsQc9hxvepoOCiF2j7bG7rh3oXK6PLTyCyTayISakuuvkRHCT5twV3iQIl0i93PeosgtkNzZlF_M_NebkpYHpA5QJQ4BxjISypLVi8erKpYFWzmykkjtM4sACpTx9urTwz1cErLWcYNoJXqQPj-PppJ0SQGslBhnREiDkzYHV8wnhcBeDcJ6Ag6eVbPPrv6f0Su1MoZ8qTrmQYvgqfM-A7O04crCUiAXTJwzqB6zMipKhFmUHJRg93zoo5u6at_EDnnEkknCuwKmOkEH0y4CYjhrQYKijD3Ox9j-jV1qsvcLZLQis4for4QgXrBiNy8iZghAhOxxuMPsQHd3zipbJVZQCR7Eqjr2w_5tR37aOofB_jkSjqB1y98wPryVpj4rDji17nobQMKA_aY8VosXCrb4UVxomYhCFGyPdy52njDO_ChS0bpWnroz7TKXBi6iyQt5TrY8md7nPF40VRqmzyM5HMqip5DnUGFKYHoOW3N2DKiA9Gkwv5Sw_wNDel-wphiMpvSqTmo6i9k_T9ruTiVvzTLioC3SszBf4AnekpvHYQQSYg_gKrj5ZsQ6LyfO1gQd4Kz9gTf4dd8Pb3af4IawNHZQ1gIqW-YpA79K38rVa1WeOuChliu83jy0pq7bIy0lx9LPgNccKbJMPkM_hpMElZxJAaUzvLAbg5pu31jG6dUiyK5W9maO3RuTKk--MdvpPooUkN7L_aKdWTpGcludVFLGa1z_CJF6GKaH8j7rEE2IaFHoq5S8WsJ-Kgcs_mzUZvA2fg6SqhkHy35qSsXvyIJi4Ck6iwwWTHX2uhsjKTQGFqMljywp4iyeUz_24wxwrERcTDdMzeeCZo7TPMJwjBpMFvZ-Ck44k5NaOmKdP_FinmCNg4pxpkSNm0Ib1xkYugJz9Ecs7VJk47JrPvJASajQyeh7WHwLv-rqjzy24MkGlBN6orqnye6PjsZT2XutfiJE7SZHSHIw-J5Oy7s5ucpv9iTfbDnnuTYnf846kH3gKJ1gF4yIEwPyqkukinzMv_SuIp_w=&fafh=
+jpaw=lQEqvMgz5Ql7jL3S328Arr3BMvYy
+kjfe=zVgq64th
+hwef=zUA29JU=
+ntrh=lT5stcs1-l0y0Q==
+fefb=zkAx9JA=
+qmvzs=zVg87Jxp-lop2uCOjg==
+efef=z1kx
+efaa=xF82
+fuqd=zVwz9JV--0Ev
+fuqd=xlQ1
+fuqd=mgs86p9q-g==
+fuqd=zV4q65Jn5VsnzOmN
+fuqd=zlo04p9o_1oo2LOJiDom8OOCaatyAL9M6JaBjsIgKmlHGhiD
+fuqd=zlo04p9o_1oo2LOJiDom8OOCaft_DOVFuZrYiMwld2MUEUnUNn4=
+fuqd=zlo04p9o_loo2LOJjzpwpbKBaal_W-9FvZjYjMx_ITcTER2DbHw=
+fuqd=zlo04p9o_loo2LOJjzpwpbKBaa9_DOlF6ZyLicxxdjcVEU2HMA==
+fuqd=mgs86p9q_VwohOqOijMh-7bQZ_txDOxJuQ==
+fuqd=mgs86p9q_Qwp1-qJimYl-7bUNfxxA-RI7g==
+fuqd=mgs86p9qqVd42-qOjGYl-7bUNq9xWe5P7A==
+fuqd=mgs86p9qrQ54hOrYjGYl-7bUMqlxAr4e6w==
+fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIvAOVO6cuBjJQkKmlJG0-P
+fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIoAOVO6cuBjJQkKmlJG0-P
+fuqd=mgs86p9q-lor0OrYj2N6--eDNqBxA78ZvQ==
+fuqd=mgs86p9qqAom0-rZj2N5o7SDMKJ9A7k=
+fuqd=mgs86p9qrlcq0-qIjjcg--iCZv1xDu9J
+fuqd=mgs86p9q_lx_0uqJi2Fw--mCMqlxWO8avg==
+fuqd=mgs86p9qrgkq0-qI2Dd3-7XQY6hxC79M7g==
+fuqd=mgs86p9qrlcn1OrZhmRy--iFZK1xCeVIuA==
+fuqd=zVc29JRm80EuzOI=
+kltz=yh8wq_IapF1b27aNj3QRi6faGa16aagHg8zt2oN1XydBfjjVFg7dyLuR6xSlEkKwKYCxgKKtR-e2zvK1at9A24Uac5vIZfotQdC38o5XL_KSwRX0CVaIDev886aQFEMSJh5JhiUZwp-AnvYVrxYysQ-oio-N-2b56bW2j0HLIaePBTyL3wesG1vPpM3WRAur4eQM3Slv7xX23vOjgAhHPRNcNINlI7DRt7TsLKV5BIE7j7ygsrJ31fSpg40e-H6RkCF1g8IfuhxTieLj83cHo-jFYPENdJ4Tv_fkiZJ3XB05Sj3_Onb1-t2k8yu6FRmKCJ-kl_n2VPDr1biaRt5yuLYCdZboJ4M3J5Klz-lkEbeb-CmvLVGxCbnY15iGIiIFG1NE52Qd5OempOwGpA01riuqoZ6vpCbhyrmNiWHcb766AW2O_WadHFmR5dDnRTmziv0F6gljsC_o-dSnxRBlNztnCO9tIPLLh6_WNLQEGbAXoZj1gvp34NWXuKN4jUSxuCBetccWoR991-GNik0zpOLcK9Z7auo379jVu4AOWgpEWCnRNwzkxKiB2CSCCR-gEN-bpKKkLaXInLaPZ_1shJBbfuycOaM8L4y3-MYtNpbk0yHaDVSPMuyd9ayGdEA4KGAw8wYC4fq43sYzsQc9hxvepoOCiF2j7bG7rh3oXK6PLTyCyTayISakuuvkRHCT5twV3iQIl0i93PeosgtkNzZlF_M_NebkpYHpA5QJQ4BxjISypLVi8erKpYFWzmykkjtM4sACpTx9urTwz1cErLWcYNoJXqQPj-PppJ0SQGslBhnREiDkzYHV8wnhcBeDcJ6Ag6eVbPPrv6f0Su1MoZ8qTrmQYvgqfM-A7O04crCUiAXTJwzqB6zMipKhFmUHJRg93zoo5u6at_EDnnEkknCuwKmOkEH0y4CYjhrQYKijD3Ox9j-jV1qsvcLZLQis4for4QgXrBiNy8iZghAhOxxuMPsQHd3zipbJVZQCR7Eqjr2w_5tR37aOofB_jkSjqB1y98wPryVpj4rDji17nobQMKA_aY8VosXCrb4UVxomYhCFGyPdy52njDO_ChS0bpWnroz7TKXBi6iyQt5TrY8md7nPF40VRqmzyM5HMqip5DnUGFKYHoOW3N2DKiA9Gkwv5Sw_wNDel-wphiMpvSqTmo6i9k_T9ruTiVvzTLioC3SszBf4AnekpvHYQQSYg_gKrj5ZsQ6LyfO1gQd4Kz9gTf4dd8Pb3af4IawNHZQ1gIqW-YpA79K38rVa1WeOuChliu83jy0pq7bIy0lx9LPgNccKbJMPkM_hpMElZxJAaUzvLAbg5pu31jG6dUiyK5W9maO3RuTKk--MdvpPooUkN7L_aKdWTpGcludVFLGa1z_CJF6GKaH8j7rEE2IaFHoq5S8WsJ-Kgcs_mzUZvA2fg6SqhkHy35qSsXvyIJi4Ck6iwwWTHX2uhsjKTQGFqMljywp4iyeUz_24wxwrERcTDdMzeeCZo7TPMJwjBpMFvZ-Ck44k5NaOmKdP_FinmCNg4pxpkSNm0Ib1xkYugJz9Ecs7VJk47JrPvJASajQyeh7WHwLv-rqjzy24MkGlBN6orqnye6PjsZT2XutfiJE7SZHSHIw-J5Oy7s5ucpv9iTfbDnnuTYnf846kH3gKJ1gF4yIEwPyqkukinzMv_SuIp_w=
+fafh=
+
+Date: Sat, 17 Jun 2023 08:46:18 GMT
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+{
+  "code" : 0,
+  "config" : null,
+  "body" : {
+    "initUrl" : "hwef=zUA29JU&fuqd=zVwz9JV--0Ev&fuqd=xlQ1&fuqd=mgs86p9q-g&fuqd=zV4q65Jn5VsnzOmN&fuqd=zlo04p9o_1oo2LOJiDom8OOCaatyAL9M6JaBjsIgKmlHGhiD&fuqd=zlo04p9o_1oo2LOJiDom8OOCaft_DOVFuZrYiMwld2MUEUnUNn4&fuqd=zlo04p9o_loo2LOJjzpwpbKBaal_W-9FvZjYjMx_ITcTER2DbHw&fuqd=zlo04p9o_loo2LOJjzpwpbKBaa9_DOlF6ZyLicxxdjcVEU2HMA&fuqd=mgs86p9q_VwohOqOijMh-7bQZ_txDOxJuQ&fuqd=mgs86p9q_Qwp1-qJimYl-7bUNfxxA-RI7g&fuqd=mgs86p9qqVd42-qOjGYl-7bUNq9xWe5P7A&fuqd=mgs86p9qrQ54hOrYjGYl-7bUMqlxAr4e6w&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIvAOVO6cuBjJQkKmlJG0-P&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIoAOVO6cuBjJQkKmlJG0-P&fuqd=mgs86p9q-lor0OrYj2N6--eDNqBxA78ZvQ&fuqd=mgs86p9qqAom0-rZj2N5o7SDMKJ9A7k&fuqd=mgs86p9qrlcq0-qIjjcg--iCZv1xDu9J&fuqd=mgs86p9q_lx_0uqJi2Fw--mCMqlxWO8avg&fuqd=mgs86p9qrgkq0-qI2Dd3-7XQY6hxC79M7g&fuqd=mgs86p9qrlcn1OrZhmRy--iFZK1xCeVIuA&fuqd=zVc29JRm80EuzOI&fefb=zkAx9JA&kdhf=mg9oqcA&kjfe=zVgq64th&efef=z1kx&jpaw=lQEqvMgz5Ql7jL3S328Arr3BMvYy&efaa=xF82&xpba=zVwx6ZFm_lks0OGKhjc&ntrh=lT5stcs1-l0y0Q",
+    "attachId" : "",
+    "attach" : false,
+    "pb" : false,
+    "exactMatch" : false
+  },
+  "msg" : null
+}
+
+
+4:46:18:625
+https://api2.openinstall.io/api/v2_5/ios/3rqhu6/init
+
+Host: api2.openinstall.io
+Content-Type: application/x-www-form-urlencoded
+Connection: keep-alive
+Accept: */*
+User-Agent: Openinstall/8 CFNetwork/1399 Darwin/22.1.0
+Accept-Language: zh-CN,zh-Hans;q=0.9
+Content-Length: 965
+Accept-Encoding: gzip, deflate, br
+
+hwef=zUA29JU&fuqd=zVwz9JV--0Ev&fuqd=xlQ1&fuqd=mgs86p9q-g&fuqd=zV4q65Jn5VsnzOmN&fuqd=zlo04p9o_1oo2LOJiDom8OOCaatyAL9M6JaBjsIgKmlHGhiD&fuqd=zlo04p9o_1oo2LOJiDom8OOCaft_DOVFuZrYiMwld2MUEUnUNn4&fuqd=zlo04p9o_loo2LOJjzpwpbKBaal_W-9FvZjYjMx_ITcTER2DbHw&fuqd=zlo04p9o_loo2LOJjzpwpbKBaa9_DOlF6ZyLicxxdjcVEU2HMA&fuqd=mgs86p9q_VwohOqOijMh-7bQZ_txDOxJuQ&fuqd=mgs86p9q_Qwp1-qJimYl-7bUNfxxA-RI7g&fuqd=mgs86p9qqVd42-qOjGYl-7bUNq9xWe5P7A&fuqd=mgs86p9qrQ54hOrYjGYl-7bUMqlxAr4e6w&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIvAOVO6cuBjJQkKmlJG0-P&fuqd=mgoz7p9m_lgs2ObfiGV59uWGYKIoAOVO6cuBjJQkKmlJG0-P&fuqd=mgs86p9q-lor0OrYj2N6--eDNqBxA78ZvQ&fuqd=mgs86p9qqAom0-rZj2N5o7SDMKJ9A7k&fuqd=mgs86p9qrlcq0-qIjjcg--iCZv1xDu9J&fuqd=mgs86p9q_lx_0uqJi2Fw--mCMqlxWO8avg&fuqd=mgs86p9qrgkq0-qI2Dd3-7XQY6hxC79M7g&fuqd=mgs86p9qrlcn1OrZhmRy--iFZK1xCeVIuA&fuqd=zVc29JRm80EuzOI&fefb=zkAx9JA&kdhf=mg9oqcA&kjfe=zVgq64th&efef=z1kx&jpaw=lQEqvMgz5Ql7jL3S328Arr3BMvYy&efaa=xF82&xpba=zVwx6ZFm_lks0OGKhjc&ntrh=lT5stcs1-l0y0Q
+
+Date: Sat, 17 Jun 2023 08:46:18 GMT
+Content-Type: application/json;charset=UTF-8
+Transfer-Encoding: chunked
+Connection: keep-alive
+
+{
+  "code" : 0,
+  "config" : {
+    "reportPeriod" : 5,
+    "eventStatsEnabled" : true,
+    "wakeupStatsEnabled" : true,
+    "installId" : "5b4eb126ef077f0a01903191",
+    "registerStatsEnabled" : true,
+    "aliveStatsEnabled" : true
+  },
+  "body" : {
+    "bind" : {
+      "testKey" : "testValue"
+    }
+  },
+  "msg" : null
+}

@@ -1,0 +1,61 @@
+@startuml game_flow
+
+App -> AppService : switchRoomType(game) /'切换房间类型为room'/
+AppService -> App : notifyRoomTypeChanged(game)
+App -> App : updateUI /'根据游戏更新房间UI'/
+App -> AppService : get_code
+AppService -> App : return code
+App -> SudSdk : initSDK(appId, appKey)
+SudSdk -> App : 初始化成功
+App -> SudSdk : loadMG(userID, roomID, code, mgId, language, ISudFSMMG) /'mgId: 小游戏id'/
+SudSdk -> App : 加载成功，返回ISudFSTAPP
+App -> App : 清理游戏视图容器，并添加新游戏视图
+SudSdk -> App : onGetGameViewInfo /'参考：https://docs.sud.tech/zh-CN/app/Client/API/ISudFSMMG/onGetGameViewInfo.html'/
+App -> SudSdk : 返回GameViewInfo json数据
+SudSdk -> App : onGetGameCfg /'参考：https://docs.sud.tech/zh-CN/app/Client/API/ISudFSMMG/onGetGameCfg.html'/
+App -> SudSdk : 返回GameCfg json数据
+SudSdk -> SudService : connect
+SudService -> AppService : get_sstoken
+AppService -> SudService : return token
+SudService -> AppService : get_user_info
+AppService -> SudService : return user
+SudService -> SudSdk : connect done
+SudSdk -> App : onGameStarted
+/'根据onGameStateChange & onPlayerStateChange状态回调，结合notifyStateChange可以自定义游戏流程'/
+SudSdk -> App : onGameStateChange /'参考：https://docs.sud.tech/zh-CN/app/Client/MGFSM/CommonStateGame.html'/
+alt mg_common_game_state /'游戏状态'/
+
+    alt gameState=0 /'游戏未开始，空闲状态'/
+
+    else gameState=1 /'loading 状态，所有玩家都准备好，队长点击了开始游戏按钮，等待加载游戏场景开始游戏'/
+
+    else gameState=2 /'playing状态，游戏进行中状态'/
+
+    end
+
+else mg_common_self_click_join_btn /'加入游戏按钮点击状态'/
+    App -> AppService : 上麦
+    AppService -> App : 上麦成功
+    App -> SudSdk : notifyStateChange(app_common_self_in) /'加入游戏'/
+else mg_common_game_settle /'游戏结算状态'/
+
+else mg_common_self_click_start_btn /'开始游戏按钮点击状态'/
+
+end
+SudSdk -> App : onPlayerStateChange /'参考：https://docs.sud.tech/zh-CN/app/Client/MGFSM/CommonStatePlayer.html'/
+alt mg_common_player_captain /'队长状态，用户是否为队长，队长在游戏中会有开始游戏的权利'/
+    App -> App : 更新自己是否队长状态 /'队长状态控制操作权限'/
+else mg_common_player_in /'加入状态，用户是否加入游戏，加入哪个队伍，退出原因，座位号'/
+    App -> App : 更新joinGameUidSets
+else mg_common_player_ready /'准备状态，用户是否准备'/
+    App -> App : 更新readyUidSets
+else mg_common_player_playing /'游戏状态，是否游戏中，游戏结束原因'/
+
+end
+
+SudSdk -> App : onExpireCode
+App -> AppService : get_code
+AppService -> App : return code
+App -> SudSdk : updateCode
+
+@enduml

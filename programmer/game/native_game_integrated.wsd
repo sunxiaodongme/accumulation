@@ -1,0 +1,43 @@
+@startuml native_game_integrated
+
+==原生APP逻辑==
+
+App -> AppService : switchRoomType(ludo) /'切换房间类型为ludo'/
+AppService -> App : notifyRoomTypeChanged(ludo)
+App -> App : updateRoomUI /'更换房间UI布局为Ludo模式'/
+App -> App : IGameApp loadGame(activity, language, gameContainer, gameCallback)
+App -> LudoGameSdk : initGame(language)
+alt 发起者
+    App -> AppService : configGame(mode, personNum)
+    alt 金币不足
+        App -> App : goRecharge
+    end
+    AppService -> App : configGame success
+end
+AppService -> App : notifyConfigGame(mode, personNum)
+alt 加入者
+    App -> AppService : joinGame
+    alt 金币不足
+        App -> App : goRecharge
+    end
+    AppService -> App : joinGame success
+end
+App -> AppService : startGame
+AppService -> App : startGame success
+AppService -> App : notifyGameStart
+
+==Cocos游戏逻辑==
+
+App -> LudoGameSdk : IGameApp.startGame(dataJson)
+LudoGameSdk -> App : IGameCallback.onGetGameView
+LudoGameSdk -> App : IGameCallback.onGameStart()
+App -> LudoGameSdk : IGameApp.onGameOp(op, dataJson)
+LudoGameSdk -> App : IGameCallback.onNetworkRequest(reqJson)
+App -> AppService : websocket req
+AppService -> App : websocket res
+App -> LudoGameSdk : IGameApp.networkResponse(resJson)
+App -> LudoGameSdk : IGameApp.exitGame(uid)
+LudoGameSdk -> App : IGameCallback.onGameFinish()
+LudoGameSdk -> App : IGameCallback.onGameOp(op, dataJson)
+
+@enduml

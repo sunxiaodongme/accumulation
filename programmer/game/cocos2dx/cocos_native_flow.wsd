@@ -1,0 +1,21 @@
+@startuml cocos_native_flow
+
+CocosActivity -> CocosActivity : onCreate
+CocosActivity -> CocosActivity : onCreateNative
+CocosActivity -> GameActivity : onCreate
+GameActivity -> GameActivity : loadNativeCode
+SystemWindow -> CocosActivity : createSurface
+
+GameActivity -> GameActivity : onStartNative
+GameActivity -> GameActivity : onResumeNative
+GameActivity -> GameActivity : onPauseNative
+GameActivity -> GameActivity : onStopNative
+GameActivity -> GameActivity : onSurfaceDestroyedNative
+GameActivity -> GameActivity : unloadNativeCode
+GameActivity -> GameActivity : onSaveInstanceStateNative
+
+
+
+
+
+@enduml

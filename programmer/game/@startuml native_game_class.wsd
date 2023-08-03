@@ -1,0 +1,39 @@
+@startuml native_game_class
+
+/'startGame dataJson: {"mode":0,"uid":1001,"players":[{"uid":1001,"name":"tony","avatar_url":""}]}'/
+/'opGame dataJson: {"mode":0,"uid":1001,"players":[{"uid":1001,"name":"tony","avatar_url":""}]}'/
+interface IGameApp {
+    initGame(language)
+    startGame(String dataJson)
+    exitGame(Long uid)
+    opGame(Int op, String dataJson, ICallback c)
+    networkResponse(String resJson)
+}
+
+class GameAppImpl {
+    static loadGame(language, IGameCallback c)
+    static destroyGame()
+}
+
+IGameApp <|.. GameAppImpl
+
+IGameCallback <.. GameAppImpl
+ICallback <.. IGameApp
+
+interface IGameCallback {
+    onGetGameView(String dataJson, ICallback c)
+    onGameStart()
+    onGameFinish()
+    onGameOp(Int op, String dataJson, ICallback c)
+    onNetworkRequest(String reqJson)
+}
+
+ICallback <.. IGameCallback
+
+/'dataJson: {"view_size":{"width":0,"height":0},"game_rect":{"postion":{"x":0,"y":0},"size":{"width":0,"height":0}}}'/
+interface ICallback {
+    onSuccess(String dataJson)
+    onFailed(Int code)
+}
+
+@enduml
