@@ -1,0 +1,183 @@
+@startuml spring_ioc_class
+
+/'ApplicationContext-start'/
+
+/'xml配置类型ApplicationContext'/
+class ClassPathXmlApplicationContext extends AbstractApplicationContext {
+	DefaultListableBeanFactory beanFactory
+}
+
+/'模板化了整个初始化流程'/
+abstract class AbstractApplicationContext implements ApplicationContext {
+	Environment environment
+	List<BeanFactoryPostProcessor> beanFactoryPostProcessors
+	ApplicationEventPublisher applicationEventPublisher
+
+	refresh() /'程序初始化入口'/
+}
+
+interface ApplicationContext extends EnvironmentCapable, ListableBeanFactory, ConfigurableBeanFactory, ApplicationEventPublisher {
+    ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException;
+	void setEnvironment(Environment environment);
+	Environment getEnvironment();
+	void addBeanFactoryPostProcessor(BeanFactoryPostProcessor postProcessor);
+	void refresh() throws BeansException, IllegalStateException;
+}
+
+/'ApplicationContext-end'/
+
+
+/'Resource-start'/
+
+/'用dom4j解析xml配置'/
+class ClassPathXmlResource implements Resource {
+
+}
+
+/'不同配置类型文件资源的抽象'/
+interface Resource extends Iterator {
+
+}
+
+/'解析Resource为BeanDefinition'/
+class XmlBeanDefinitionReader {
+	AbstractBeanFactory bf
+	void loadBeanDefinitions(Resource res)
+}
+
+/'Bean定义数据'/
+class BeanDefinition {
+	boolean lazyInit = true;
+	String[] dependsOn; /'依赖的Bean'/
+	ConstructorArgumentValues constructorArgumentValues; /'构造函数参数'/
+	PropertyValues propertyValues; /'属性值'/
+	String initMethodName;
+	volatile Object beanClass;
+    String id;
+    String className;
+    String scope=SCOPE_SINGLETON;
+}
+
+class ConstructorArgumentValues {
+	List<ConstructorArgumentValue> argumentValueList
+}
+
+class ConstructorArgumentValue {
+	Object value;
+	String type;
+	String name;
+}
+
+class PropertyValues {
+	List<PropertyValue> propertyValueList
+}
+
+class PropertyValue {
+	String type;
+	String name;
+	Object value;
+	boolean isRef;
+}
+
+/'Resource-end'/
+
+
+interface EnvironmentCapable {
+	Environment getEnvironment();
+}
+
+interface Environment extends PropertyResolver {
+
+}
+
+interface PropertyResolver { }
+
+/'BeanFactory-start'/
+
+interface BeanFactory {
+    Object getBean(String name) throws BeansException;
+	boolean containsBean(String name);
+	boolean isSingleton(String name);
+	boolean isPrototype(String name);
+	Class<?> getType(String name);
+}
+
+/'Bean作为集合管理'/
+interface ListableBeanFactory extends BeanFactory {
+
+}
+
+/'Bean之间依赖关系和处理器逻辑'/
+interface ConfigurableBeanFactory extends BeanFactory, SingletonBeanRegistry {
+	void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
+	void registerDependentBean(String beanName, String dependentBeanName)
+}
+
+/'单例Bean容器'/
+interface SingletonBeanRegistry {
+    void registerSingleton(String beanName, Object singletonObject);
+    Object getSingleton(String beanName);
+    boolean containsSingleton(String beanName);
+}
+
+interface ApplicationEventPublisher {
+	void publishEvent(ApplicationEvent event);
+	void addApplicationListener(ApplicationListener<?> listener);
+}
+
+class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements ConfigurableListableBeanFactory {
+	ConfigurableListableBeanFactory parentBeanFctory
+
+}
+
+/'责任链式调用BeanPostProcessor对Bean进行处理'/
+abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+	List<BeanPostProcessor> beanPostProcessors
+}
+
+/'Bean创建，触发前后置处理器，属性注入'/
+abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory, BeanDefinitionRegistry {
+	Map<String,BeanDefinition> beanDefinitionMap
+	Map<String, Object> earlySingletonObjects /'解决循环依赖问题'/
+	void refresh()
+}
+
+/'为实现AOP引入'/
+abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
+
+}
+
+/'默认单例Bean实例管理器，一并管理依赖关系'/
+class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
+	Map<String, Object> singletonObjects
+	Map<String,Set<String>> dependentBeanMap
+	Map<String,Set<String>> dependenciesForBeanMap
+}
+
+/'处理Autowire注解'/
+interface AutowireCapableBeanFactory extends BeanFactory {}
+
+/'BeanFactory-end'/
+
+
+/'BeanPostProcessor-start'/
+
+/'Bean初始化前后置处理器'/
+interface BeanPostProcessor {
+	Object postProcessBeforeInitialization(Object bean, String beanName);
+	Object postProcessAfterInitialization(Object bean, String beanName);
+	void setBeanFactory(BeanFactory beanFactory);
+}
+
+class AutowiredAnnotationBeanPostProcessor implements BeanPostProcessor, BeanFactoryAware {
+
+}
+
+interface BeanFactoryAware {
+	void setBeanFactory(BeanFactory beanFactory);
+}
+
+/'BeanPostProcessor-end'/
+
+
+@enduml
