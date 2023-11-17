@@ -1,0 +1,70 @@
+@startuml flyingchess_flow
+
+==初始化==
+
+NativeUtil -> NativeUtil : onGameStartRet
+NativeUtil -> NetProxy : cs_init
+NetProxy -> NativeUtil : send
+NativeUtil -> NetProxy : onMessage
+NetProxy -> EventMgr : dispatch
+EventMgr -> NetProxy : sc_init
+
+==投骰子==
+
+UIDiceInfo -> UIDiceInfo : onGoClick
+UIDiceInfo -> NetProxy : cs_roll
+NetProxy -> NativeUtil : send
+NativeUtil -> NetProxy : onMessage
+NetProxy -> EventMgr : dispatch
+EventMgr -> NetProxy : sc_roll
+NetProxy -> NetEvent : parseEvent
+alt roll_dice_event
+    NetEvent -> NetEvent : onRollDiceEvent /'继续摇骰子'/
+    NetEvent -> RollDiceState : onEnter
+else select_piece_event
+    NetEvent -> NetEvent : onSelectPieceEvent
+    NetEvent -> SelectChessState : onEnter /'设置棋子可选状态'/
+end
+
+==选择棋子==
+
+EventMgr -> UIDiceSelect : OnChessSelect
+UIDiceSelect -> UIDiceSelect : show /'展示棋子'/
+alt 只有一个棋子一个色点可走
+    UIDiceSelect -> UIDiceSelect : onDiceClick
+else    
+    UIDiceSelect -> UIDiceSelect : bindBtnEvent
+    UIDiceSelect -> UIDiceSelect : onDiceClick
+end
+UIDiceSelect -> NetProxy : cs_chess
+NetProxy -> NativeUtil : send
+NativeUtil -> NetProxy : onMessage
+NetProxy -> EventMgr : dispatch
+EventMgr -> NetProxy : sc_chess
+NetProxy -> NetEvent : parseEvent
+NetEvent -> NetEvent : onMovePieceEvent
+NetEvent -> ChessMoveState : onEnter /'移动棋子动画'/
+
+==回合结束==
+
+alt
+    ChessMoveState -> RoundEndState : onEnter
+else
+    ChessItemState -> RoundEndState : onEnter
+else
+    ChessBackState -> RoundEndState : onEnter
+end
+RoundEndState -> NetProxy : cs_end
+NetProxy -> NativeUtil : send
+NativeUtil -> NetProxy : onMessage
+NetProxy -> EventMgr : dispatch
+EventMgr -> NetProxy : cs_end
+NetProxy -> NetEvent : parseEvent
+NetEvent -> NetEvent : onRollDiceEvent /'下一轮开始摇骰子'/
+
+==游戏结束==
+
+NetProxy -> NetEvent : parseEvent
+NetEvent -> NetEvent : onGameOverEvent /'游戏结束'/
+
+@enduml
