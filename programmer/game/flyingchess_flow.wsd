@@ -9,6 +9,12 @@ NativeUtil -> NetProxy : onMessage
 NetProxy -> EventMgr : dispatch
 EventMgr -> NetProxy : sc_init
 
+==更新道具==
+
+NetProxy -> SceneUtil : updateMagicItems
+UIMagicItem -> UIMagicItem : onClick
+UIMagicItem -> PanelMgr : open /'道具提示'/
+
 ==投骰子==
 
 UIDiceInfo -> UIDiceInfo : onGoClick
@@ -44,6 +50,33 @@ EventMgr -> NetProxy : sc_chess
 NetProxy -> NetEvent : parseEvent
 NetEvent -> NetEvent : onMovePieceEvent
 NetEvent -> ChessMoveState : onEnter /'移动棋子动画'/
+ChessMoveState -> JumpMoveComp : from/duration/jumpheight/to /'棋子动效参数设置'/
+AppFacade -> AppFacade : update
+AppFacade -> Time : onUpdate
+Time -> Timer : onUpdate
+Timer -> GameMgr : update
+GameMgr -> GameMachine : update
+GameMachine -> ChessMoveState : update
+ChessMoveState -> ChessMoveState : onUpdate
+alt 如果移动完
+    ChessMoveState -> ChessMoveState : getNextState
+    GameMachine -> GameMachine : setState /'切换到新状态'/
+else
+    JumpMoveComp -> JumpMoveComp : update
+    ChessMoveState -> UIChess : node.position=JumpMoveComp.cur /'棋子UI更新'/
+end
+
+==获取道具==
+
+alt BoardData.curData.eatItemInfos > 0 /'下一个状态是获取道具'/
+    ChessItemState -> ChessItemState : onEnter
+
+==踩回棋子==
+
+else BoardData.backPlayerId != -1 /'下一个状态踩到棋子'/
+    ChessBackState -> ChessBackState : onEnter
+    ChessBackState -> ChessBackState : onUpdate
+end
 
 ==回合结束==
 
