@@ -1,0 +1,107 @@
+@startuml Tomcat_class
+
+class HttpConnector {
+    Deque<HttpProcessor> processors
+    Map<String, HttpSession> sessions
+    start()
+    
+}
+Connector <|.. HttpConnector
+Runnable <|.. HttpConnector
+interface Connector {
+
+}
+ServerSocket <.. HttpConnector
+HttpProcessor <.. HttpConnector
+Runnable <|.. HttpProcessor
+class HttpProcessor {
+    assign(Socket socket)
+    process(Socket socket)
+}
+ServletProcessor <.. HttpProcessor
+class ServletProcessor {
+    process(Request request, Response response)
+}
+StandardHost <.. ServletProcessor
+StaticResourceProcessor <.. HttpProcessor
+
+
+class StandardHost {
+    Map<String, StandardContext> contextMap
+}
+
+StandardHostValve <.. StandardHost
+ValveBase <.. StandardHostValve
+ContainerBase <|-- StandardHost
+abstract class ContainerBase {
+    Map<String, Container> children
+}
+Container <|.. ContainerBase
+interface Container {
+    Loader getLoader()
+    Container getParent()
+    setParent(Container container)
+    addChild(Container child)
+    Container findChild(String name)
+    Container[] findChildren()
+    invoke(Request request, Response response)
+    removeChild(Container child)
+    Logger getLogger()
+}
+StandardContext <.. StandardHost
+class StandardContext {
+    Map<String, String> servletClsMap
+    Map<String, StandardWrapper> servletInstanceMap
+}
+StandardContextValve <.. StandardContext
+ValveBase <.. StandardContextValve
+ContainerBase <|-- StandardContext
+Context <|.. StandardContext
+interface Context {
+
+}
+Container <|-- Context
+StandardPipeline <-- ContainerBase
+class StandardPipeline {
+
+}
+Pipeline <|.. StandardPipeline
+interface Pipeline {
+    Valve getBasic()
+    setBasic(Valve valve)
+    addValve(Valve valve)
+    removeValve(Valve valve)
+    Valve[] getValves()
+    invoke(Request request, Response response)
+}
+StandardPipelineValveContext <.. StandardPipeline
+interface ValveContext {
+    invokeNext(Request request, Response response)
+}
+ValveContext <|.. StandardPipelineValveContext
+StandardWrapper <.. StandardContext
+class StandardWrapper {
+    loadServlet()
+}
+ContainerBase <|-- StandardWrapper
+Wrapper <|.. StandardWrapper
+interface Wrapper {
+    allocate()
+    load()
+}
+Servlet <-- StandardWrapper
+interface Servlet {
+    service(ServletRequest var1, ServletResponse var2)
+}
+
+StandardWrapperValve <.. StandardWrapper
+AccessLogValve <.. StandardWrapper
+interface Valve {
+    getContainer()
+    invoke(Request request, Response response, ValveContext context)
+}
+Valve <|.. ValveBase
+ValveBase <|-- StandardWrapperValve
+ValveBase <|-- AccessLogValve
+
+@enduml

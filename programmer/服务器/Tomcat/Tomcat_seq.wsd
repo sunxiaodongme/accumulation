@@ -1,0 +1,24 @@
+@startuml Tomcat_seq
+
+BootStrap -> BootStrap : main()
+BootStrap -> HttpConnector : start()
+HttpConnector -> ServerSocket : new()
+HttpConnector -> HttpProcessor : assign(Socket socket)
+HttpProcessor -> HttpProcessor : process(Socket socket)
+HttpProcessor -> ServletProcessor : process(Request request, Response response)
+ServletProcessor -> StandardHost : invoke(Request request, Response response)
+StandardHost -> StandardPipeline : invoke(Request request, Response response)
+StandardPipeline -> StandardPipelineValveContext : invokeNext(Request request, Response response)
+StandardPipelineValveContext -> StandardHostValve : invoke(Request request, Response response, ValveContext context)
+StandardHostValve -> StandardContext : invoke(Request request, Response response)
+StandardContext -> StandardContextValve : invoke(Request request, Response response, ValveContext valveContext)
+StandardContextValve -> StandardContext : getWrapper(String name)
+StandardWrapper -> StandardWrapper : loadServlet()
+StandardContextValve -> StandardWrapper : invoke(Request request, Response response)
+StandardWrapper -> AccessLogValve : invoke(Request request, Response response, ValveContext context)
+StandardWrapper -> StandardWrapperValve : invoke(Request request, Response response, ValveContext context)
+StandardWrapperValve -> Servlet : service(ServletRequest var1, ServletResponse var2)
+
+
+
+@enduml
