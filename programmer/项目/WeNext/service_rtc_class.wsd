@@ -1,0 +1,17 @@
+@startuml service_rtc_class
+
+class RoomActivityConfig {
+    Integer configType;
+    String configValue;
+}
+
+class RtcConfig {
+    Long startTime; /'开始生效时间'/
+    Integer rtcType;
+    Integer lastRtcType; /'生效之前的rtc类型'/
+    Boolean notified;
+}
+
+
+
+@enduml

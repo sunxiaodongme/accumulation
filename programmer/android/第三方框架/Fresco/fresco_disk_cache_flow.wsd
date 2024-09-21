@@ -1,0 +1,15 @@
+@startuml fresco_disk_cache_flow
+
+DiskCacheWriteProducer -> BufferedDiskCache: put(key: CacheKey, encodedImage: EncodedImage)
+BufferedDiskCache -> BufferedDiskCache : writeToDiskCache(key: CacheKey, encodedImage: EncodedImage?)
+BufferedDiskCache -> DiskStorageCache : insert(CacheKey key, WriterCallback callback)
+DiskStorageCache -> DiskStorageCache : maybeEvictFilesInCacheDir
+DiskStorageCache -> StatFsHelper : testLowDiskSpace
+DiskStorageCache -> DiskStorageCache : evictAboveSize
+DiskStorageCache -> DefaultDiskStorage : getEntries
+DefaultDiskStorage -> FileTree : walkFileTree
+DiskStorageCache -> DiskStorageCache : getSortedEntries
+DiskStorageCache -> DefaultEntryEvictionComparatorSupplier : compare
+
+
+@enduml

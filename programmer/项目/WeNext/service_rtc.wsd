@@ -1,0 +1,43 @@
+@startuml service_rtc
+
+==RTC切换==
+
+Client -> Service : config/roomRtcSet
+Service -> ConfigController : setRoomRtc
+
+alt 全量切换
+    ConfigController -> RoomActivityConfigServiceImpl : setGlobalRoomConfig
+else 房间切换
+    ConfigController -> RoomActivityConfigServiceImpl : addRoomConfig
+end
+
+RoomActivityConfigServiceImpl -> RoomActivityConfigMapper : refreshAllConfig
+RoomActivityConfigServiceImpl -> RedisService : 更新Redis room_rtc_config
+alt 如果房间RTC类型变更
+    Service -> Client : RTC_CHANGED_NOTIFY
+end
+
+
+==JOIN ROOM==
+
+Client -> Service : JOINROOM
+Service -> RoomController : joinRoom
+RoomController -> RtcServiceImpl : getRtcType
+RtcServiceImpl -> AudioPlatformUtil : getRoomRtcType
+AudioPlatformUtil -> RedisService : 读取Redis room_rtc_config
+alt 版本支持RTC类型
+    Service -> Client : 返回房间RTC类型
+else 版本不支持RTC类型
+    Service -> Client : 提升升级版本
+end
+
+==炸房检测==
+
+SecurityCheckService -> SecurityCheckService : timerCheckRoom
+SecurityCheckService -> SecurityCheckService : checkRoom
+SecurityCheckService -> SecurityService : getRoomMediaUserList
+SecurityCheckService -> MicService : getRoomMicUid
+SecurityCheckService -> KickRuleService : kickMediaUser
+
+
+@enduml
