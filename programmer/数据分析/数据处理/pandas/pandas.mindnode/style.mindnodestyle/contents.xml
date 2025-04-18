@@ -5,7 +5,7 @@
 	<key>allowNodeStrokeColorVariation</key>
 	<true/>
 	<key>backgroundColor</key>
-	<string>{0.906000, 0.922000, 0.933000, 1.000000}</string>
+	<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 	<key>baseSubnode</key>
 	<dict>
 		<key>shapeStyle</key>
@@ -13,21 +13,21 @@
 			<key>borderStrokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.071000, 0.529000, 0.871000, 1.000000}</string>
+				<string>{0.647000, 0.468000, 0.027000, 1.000000}</string>
 				<key>dash</key>
 				<integer>0</integer>
 				<key>width</key>
-				<real>6</real>
+				<real>2</real>
 			</dict>
 			<key>fillColor</key>
-			<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+			<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			<key>shapeType</key>
 			<integer>0</integer>
 		</dict>
 		<key>strokeStyle</key>
 		<dict>
 			<key>color</key>
-			<string>{0.071000, 0.529000, 0.871000, 1.000000}</string>
+			<string>{0.647000, 0.468000, 0.027000, 1.000000}</string>
 			<key>dash</key>
 			<integer>0</integer>
 			<key>width</key>
@@ -40,7 +40,7 @@
 			<key>bold</key>
 			<false/>
 			<key>color</key>
-			<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+			<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			<key>fontName</key>
 			<string>HelveticaNeue</string>
 			<key>fontSize</key>
@@ -55,36 +55,36 @@
 			<key>arrowStyle</key>
 			<dict>
 				<key>endArrow</key>
-				<integer>1</integer>
+				<integer>4</integer>
 				<key>startArrow</key>
-				<integer>0</integer>
+				<integer>4</integer>
 			</dict>
 			<key>pathStyle</key>
 			<dict>
 				<key>strokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.071000, 0.529000, 0.871000, 1.000000}</string>
+					<string>{0.647000, 0.889524, 0.027000, 1.000000}</string>
 					<key>dash</key>
 					<integer>0</integer>
 					<key>width</key>
-					<real>2</real>
+					<real>1</real>
 				</dict>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>alignment</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>bold</key>
-				<false/>
+				<true/>
 				<key>color</key>
 				<string>{0.000000, 0.000000, 0.000000, 1.000000}</string>
 				<key>fontName</key>
-				<string>HelveticaNeue</string>
+				<string>HelveticaNeue-BoldItalic</string>
 				<key>fontSize</key>
 				<real>14</real>
 				<key>italic</key>
-				<false/>
+				<true/>
 				<key>strikethrough</key>
 				<false/>
 				<key>underline</key>
@@ -100,38 +100,38 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+					<string>{0.273000, 0.357000, 0.383000, 1.000000}</string>
 					<key>dash</key>
 					<integer>0</integer>
 					<key>width</key>
-					<real>1</real>
+					<real>2</real>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.037000, 0.160000, 0.198000, 1.000000}</string>
 				<key>shapeType</key>
 				<integer>2</integer>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.273000, 0.357000, 0.383000, 1.000000}</string>
 				<key>dash</key>
 				<integer>0</integer>
 				<key>width</key>
-				<real>2</real>
+				<real>4</real>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>alignment</key>
-				<integer>0</integer>
+				<integer>1</integer>
 				<key>bold</key>
 				<false/>
 				<key>color</key>
-				<string>{0.102000, 0.333000, 0.412000, 1.000000}</string>
+				<string>{0.985000, 0.958000, 0.864000, 1.000000}</string>
 				<key>fontName</key>
-				<string>HelveticaNeue-Light</string>
+				<string>HelveticaNeue</string>
 				<key>fontSize</key>
-				<real>24</real>
+				<real>31</real>
 				<key>italic</key>
 				<false/>
 			</dict>
@@ -145,20 +145,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.071000, 0.529000, 0.871000, 1.000000}</string>
+					<string>{0.647000, 0.468000, 0.027000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.071000, 0.529000, 0.871000, 1.000000}</string>
+				<string>{0.647000, 0.468000, 0.027000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -167,20 +167,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.149000, 0.733000, 0.820000, 1.000000}</string>
+					<string>{0.450000, 0.541000, 0.020000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.149000, 0.733000, 0.820000, 1.000000}</string>
+				<string>{0.450000, 0.541000, 0.020000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -189,20 +189,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.220000, 0.576000, 0.216000, 1.000000}</string>
+					<string>{0.747000, 0.236000, 0.101000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.220000, 0.576000, 0.216000, 1.000000}</string>
+				<string>{0.747000, 0.236000, 0.101000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -211,20 +211,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.863000, 0.133000, 0.157000, 1.000000}</string>
+					<string>{0.147000, 0.571000, 0.525000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.863000, 0.133000, 0.157000, 1.000000}</string>
+				<string>{0.147000, 0.571000, 0.525000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -233,20 +233,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.992000, 0.714000, 0.051000, 1.000000}</string>
+					<string>{0.128000, 0.463000, 0.782000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.992000, 0.714000, 0.051000, 1.000000}</string>
+				<string>{0.128000, 0.463000, 0.782000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 		<dict>
@@ -255,20 +255,20 @@
 				<key>borderStrokeStyle</key>
 				<dict>
 					<key>color</key>
-					<string>{0.573000, 0.165000, 0.647000, 1.000000}</string>
+					<string>{0.713000, 0.331000, 0.520000, 1.000000}</string>
 				</dict>
 				<key>fillColor</key>
-				<string>{1.000000, 1.000000, 1.000000, 1.000000}</string>
+				<string>{0.016000, 0.127000, 0.160000, 1.000000}</string>
 			</dict>
 			<key>strokeStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.573000, 0.165000, 0.647000, 1.000000}</string>
+				<string>{0.713000, 0.331000, 0.520000, 1.000000}</string>
 			</dict>
 			<key>titleStyle</key>
 			<dict>
 				<key>color</key>
-				<string>{0.263000, 0.357000, 0.400000, 1.000000}</string>
+				<string>{0.880000, 0.870027, 0.844800, 1.000000}</string>
 			</dict>
 		</dict>
 	</array>
